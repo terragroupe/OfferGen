@@ -1,0 +1,31 @@
+[{
+        "name": "Lyes SAADELLA",
+        "email": "lyes.saadella@terra-groupe.fr",
+        "cid": "06.27.20.04.69",
+        "image": "lyes.webp"
+    },
+    {
+        "name": "Sofia RHETAS",
+        "email": "sofia.rhetas@terra-groupe.fr",
+        "cid": "07.83.73.02.12",
+        "image": "sofia.webp"
+    },
+    {
+        "name": "Rochedi SAADELLA",
+        "email": "rochedi.saadella@terra-groupe.fr",
+        "cid": "06.67.25.70.29",
+        "image": "rochedi.webp"
+    },
+    {
+        "name": "Achour OULABBASSI",
+        "email": "achour.oulabbassi@terra-groupe.fr",
+        "cid": "06.26.59.73.77",
+        "image": "oulabbassi.webp"
+    },
+    {
+        "name": "Thomas BAZIN",
+        "email": "thomas.bazin@terra-groupe.fr",
+        "cid": "06.33.44.62.47",
+        "image": "thomas.webp"
+    }
+]
