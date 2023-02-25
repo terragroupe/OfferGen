@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div>
       <Head>
-        <title>Générateur d'Offres</title>
+        <title>Générateur d&rsquo;Offres</title>
         <meta name="description" content="Générateur d'Offres" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
