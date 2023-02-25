@@ -1,0 +1,24 @@
+Site: 2 Line 70Char
+PCE: Number 8char
+Tarif: 
+Profil:
+Car(MWh):
+
+
+Debut de fourinture au ~Date: (Date) [Date Changeable]
+
+Fournisseurs: Dropdown menu with logo.
+Engagement: Date Picker. (3Month 1day = 4Month)
+Type d’Offre: Dropdown [Prix fixe,fix, variable]
+Prix Molécule (MWh): Number(Integer)
+Abonnement/Mois: Number(Integer)
+Taxes => CTA/AN: Number(Integer)
+Taxes => TICGN: Number(Integer)
+Total HTVA: (Mois*car)+(Abonnement*12)+CTA+(TICGN*car)
+a8 = (a4*car + a5*12 + a6 + a7*car)
+
+Date: Date Picker (Today)
+
+Rows (Maximum 3 row and minimum 1)
+
+
