@@ -21,4 +21,6 @@ Date: Date Picker (Today)
 
 Rows (Maximum 3 row and minimum 1)
 
+PDF Work ON => 690PX
+
 

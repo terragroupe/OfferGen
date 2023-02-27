@@ -2,6 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
+import { useEffect } from "react";
 
 import { jsPDF } from "jspdf";
 
@@ -10,46 +11,49 @@ import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 
 import Consultant from "../data/consultant.json";
+import Partner from "../data/partner.json";
 
 const createPDF = async () => {
   const printContent = document.getElementById("print-content").innerHTML;
   // Formating for PDF.CO With tailwind CSS
   // Tailwind Intellisense Bug ->
-  // const htmlContent = `
-  //     <html>
-  //         <head>
-  //         <script src="https://cdn.tailwindcss.com"></script>
-  //         <script>
-  //           const tailwindConfig = {
-  //             theme: {
-  //               extend: {
-  //                 fontFamily: {
-  //                   'barlow': ['Barlow']
-  //                 },
-  //                 colors: {
-  //                   'tgbrown': {
-  //                     '50': '#f6f4f0',
-  //                     '100': '#eae3d7',
-  //                     '200': '#d6c9b2',
-  //                     '300': '#bea786',
-  //                     '400': '#a6845b',
-  //                     '500': '#9c7956',
-  //                     '600': '#866248',
-  //                     '700': '#6c4c3c',
-  //                     '800': '#5c4237',
-  //                     '900': '#503a33',
-  //                   },
-  //                 }
-  //               },
-  //             }
-  //           }
-  //         </script>
-  //         </head>
-  //         <body>
-  //             ${printContent}
-  //         </body>
-  //     </html>
-  // `;
+  const htmlContent = `
+      <html>
+          <head>
+          <style>
+            @import url("https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+            input[type="date"]::-webkit-calendar-picker-indicator {
+              display: none;
+          }
+          .bg-tgbrown-400{
+            background-color:#A6845B;
+          }
+          .text-tgbrown-400{
+            color:#A6845B;
+          }
+          .border-tgbrown-400 {
+            border-color: #A6845B;
+        }
+          </style>
+          <script src="https://cdn.tailwindcss.com"></script>
+          <script>
+          tailwind.config = {
+            theme: {
+              extend: {
+                colors: {
+                  tgbrown-400: '#da373d',
+                }
+              }
+            }
+          }
+        </script>
+          </script>
+          </head>
+          <body>
+              ${printContent}
+          </body>
+      </html>
+  `;
 
   const apiKey =
     "fahimfaisal1998@gmail.com_11301841ce4bc05ccea96fff26791c94e7ec723bbfa4971b6c67f990904964def68ff38b";
@@ -60,6 +64,9 @@ const createPDF = async () => {
     {
       html: htmlContent,
       name: "document.pdf",
+      margins: "8px 8px 8px 8px",
+      paperSize: "A4",
+      orientation: "Portrait",
     },
     {
       headers: {
@@ -76,8 +83,27 @@ function classNames(...classes) {
 }
 
 export default function Home() {
-  const [selected, setSelected] = useState(Consultant[3]);
+  const [selectedConsultant, setSelectedConsultant] = useState(Consultant[3]);
+  const [selectedPartner, setSelectedPartner] = useState(Partner[1]);
   const [debutDate, setDebutDate] = useState(new Date());
+  const [formData, setFormData] = useState({htva:0});
+
+  useEffect(()=>{
+console.log(formData);
+  },[formData])
+
+  const calulateHTVA = ()=>{
+    // Total HTVA: (Mois*car)+(Abonnement*12)+CTA+(TICGN*car)
+    // a8 = (a4*car + a5*12 + a6 + a7*car)
+    var totalHTVA = (formData.molecule*formData.car)+(formData.mois*12)+formData.cta+(formData.ticgn*formData.car)
+    console.log("Total HTVA: " + totalHTVA);
+    setFormData({...formData, "htva":totalHTVA})
+  }
+
+  const handleInputChange = (event) => {
+    calulateHTVA()
+    setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
 
   return (
     <div>
@@ -115,6 +141,8 @@ export default function Home() {
                     type="text"
                     name="socialReason"
                     id="socialReason"
+                    value={formData.socialReason || ""}
+                    onChange={(e) => handleInputChange(e)}
                   />
                 </div>
                 <div className="flex space-x-2 group">
@@ -126,6 +154,8 @@ export default function Home() {
                     type="text"
                     name="siren"
                     id="siren"
+                    value={formData.siren || ""}
+                    onChange={(e) => handleInputChange(e)}
                   />
                 </div>
                 <div className="flex space-x-2 group">
@@ -137,18 +167,23 @@ export default function Home() {
                     type="text"
                     name="contactPerson"
                     id="contactPerson"
+                    value={formData.contactPerson || ""}
+                    onChange={(e) => handleInputChange(e)}
                   />
                 </div>
               </div>
-              <Listbox value={selected} onChange={setSelected}>
+              <Listbox
+                value={selectedConsultant}
+                onChange={setSelectedConsultant}
+              >
                 {({ open }) => (
                   <>
                     <div className="relative mt-1">
-                      <Listbox.Button className="relative w-full cursor-pointer rounded-md py-2 pl-3 pr-10 text-left focus:outline-none sm:text-sm">
+                      <Listbox.Button className="relative w-full cursor-pointer rounded-md pl-3 text-left focus:outline-none sm:text-sm">
                         <div className="flex items-center space-x-2">
                           <div className="">
-                            <Image
-                              src={`/img/consultant/${selected.image}`}
+                            <img
+                              src={`https://offergen.vercel.app/img/consultant/${selectedConsultant.image}`}
                               alt="profile"
                               height={90}
                               width={90}
@@ -158,9 +193,9 @@ export default function Home() {
                             <div className="font-semibold">
                               Votre Consultant{" "}
                             </div>
-                            <div>{selected.name}</div>
-                            <div>{selected.email}</div>
-                            <div>{selected.cid}</div>
+                            <div>{selectedConsultant.name}</div>
+                            <div>{selectedConsultant.email}</div>
+                            <div>{selectedConsultant.cid}</div>
                           </div>
                         </div>
                         {/* <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
@@ -192,7 +227,7 @@ export default function Home() {
                               }
                               value={person}
                             >
-                              {({ selected, active }) => (
+                              {({ selectedConsultant, active }) => (
                                 <>
                                   <div className="flex items-center">
                                     <img
@@ -202,7 +237,7 @@ export default function Home() {
                                     />
                                     <span
                                       className={classNames(
-                                        selected
+                                        selectedConsultant
                                           ? "font-semibold"
                                           : "font-normal",
                                         "ml-3 block truncate"
@@ -212,7 +247,7 @@ export default function Home() {
                                     </span>
                                   </div>
 
-                                  {selected ? (
+                                  {selectedConsultant ? (
                                     <span
                                       className={classNames(
                                         active
@@ -288,8 +323,10 @@ export default function Home() {
                 className="w-full py-3 text-center"
                 type="number"
                 min={1}
-                name=""
-                id=""
+                name="car"
+                id="car"
+                value={formData.car || ""}
+                onChange={(e) => handleInputChange(e)}
               />
             </div>
 
@@ -330,7 +367,9 @@ export default function Home() {
                 Prix Molécule MWh
               </div>
               <div className="text-center text-[11px] font-bold border-r py-1">
-                Abonnement/Mois
+                Abonnement/
+                <br />
+                Mois
               </div>
               <div className="grid grid-rows-2">
                 <div className="text-center text-[11px] font-bold border-r py-1">
@@ -352,46 +391,156 @@ export default function Home() {
             <div className="text-center text-tgbrown-400 text-xl font-extrabold border-l border-r border-tgbrown-400 py-3">
               NOS OFFRES
             </div>
-            <div className="grid grid-cols-5 border overflow-hidden border-tgbrown-400 rounded-b-md">
-              <input
-                className="w-full py-3 text-center border-r border-tgbrown-400"
-                type="text"
-                name=""
-                id=""
-              />
-              <input
-                className="w-full py-3 text-center  border-r border-tgbrown-400"
-                type="text"
-                name=""
-                id=""
-              />
-              <input
-                className="w-full py-3 text-center  border-r border-tgbrown-400"
-                type="text"
-                name=""
-                id=""
-              />
-              <input
-                className="w-full py-3 text-center  border-r border-tgbrown-400"
-                type="text"
-                name=""
-                id=""
-              />
-              <input
-                className="w-full py-3 text-center"
-                type="text"
-                name=""
-                id=""
-              />
-            </div>
+            <div className="grid grid-cols-7 border text-[11px] font-semibold border-tgbrown-400 rounded-b-md">
+              <div className="py-1 text-center border-r border-tgbrown-400">
+                <Listbox value={selectedPartner} onChange={setSelectedPartner}>
+                  {({ open }) => (
+                    <>
+                      <div className="relative mt-1">
+                        <Listbox.Button className="relative w-full cursor-pointer focus:outline-none sm:text-sm">
+                          <img
+                            src={`/img/partner/${selectedPartner.logo}`}
+                            className="w-full"
+                            alt=""
+                          />
+                        </Listbox.Button>
 
-            <button
-              onClick={createPDF}
-              className="bg-black mt-36 w-36 md:w-48 h-14 md:h-20 rounded-b-lg hover:bg-tgbrown-600 hover:-translate-y-1 transition-all duration-300 text-white font-bold text-xl md:text-2xl flex justify-center items-center"
-            >
-              Générer PDF
-            </button>
+                        <Transition
+                          show={open}
+                          as={Fragment}
+                          leave="transition ease-in duration-100"
+                          leaveFrom="opacity-100"
+                          leaveTo="opacity-0"
+                        >
+                          <Listbox.Options className="absolute z-10 mt-1 max-h-40 w-24 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            {Partner.map((person) => (
+                              <Listbox.Option
+                                key={person.id}
+                                className={({ active }) =>
+                                  classNames(
+                                    active
+                                      ? "text-white bg-tgbrown-300"
+                                      : "text-gray-900",
+                                    "relative cursor-default select-none"
+                                  )
+                                }
+                                value={person}
+                              >
+                                {({ selectedPartner, active }) => (
+                                  <>
+                                    <div className="flex items-center">
+                                      <img
+                                        src={`/img/partner/${person.logo}`}
+                                        alt="person"
+                                        className=""
+                                      />
+                                    </div>
+                                  </>
+                                )}
+                              </Listbox.Option>
+                            ))}
+                          </Listbox.Options>
+                        </Transition>
+                      </div>
+                    </>
+                  )}
+                </Listbox>
+              </div>
+              <div className="flex items-center justify-center text-center border-r border-tgbrown-400">
+                <div className="text-center">
+                  Fin au
+                  <input
+                    type="date"
+                    className="text-center"
+                    value={debutDate.toISOString().substring(0, 10)}
+                    onChange={(e) => setDebutDate(new Date(e.target.value))}
+                    name=""
+                    id=""
+                  />
+                  <br />
+                  {(debutDate.getFullYear() - new Date().getFullYear()) * 12 +
+                    (debutDate.getMonth() - new Date().getMonth())}{" "}
+                  mois
+                </div>
+              </div>
+              <select
+                id="countries"
+                className="w-full appearance-none text-center border-r border-tgbrown-400"
+              >
+                <option className="text-base" selected value="fix">
+                  Prix Fixe
+                </option>
+                <option className="text-base" value="var">
+                  Prix Variable
+                </option>
+              </select>
+
+              <input
+                className="w-full text-center border-r border-tgbrown-400"
+                type="number"
+                min={1}
+                name="molecule"
+                id="molecule"
+                value={formData.molecule || ""}
+                onChange={(e) => handleInputChange(e)}
+              />
+              <input
+                className="w-full text-center border-r border-tgbrown-400"
+                type="number"
+                min={1}
+                name="mois"
+                id="mois"
+                value={formData.mois || ""}
+                onChange={(e) => handleInputChange(e)}
+              />
+
+              <div className="grid grid-cols-2">
+                <input
+                  className="w-full text-center border-r border-tgbrown-400"
+                  type="number"
+                  min={1}
+                  name="cta"
+                  id="cta"
+                  value={formData.cta || ""}
+                  onChange={(e) => handleInputChange(e)}
+                />
+                <input
+                  className="w-full text-center border-r border-tgbrown-400"
+                  type="number"
+                  min={1}
+                  name="ticgn"
+                  id="ticgn"
+                  value={formData.ticgn || ""}
+                  onChange={(e) => handleInputChange(e)}
+                />
+              </div>
+              <div className="flex justify-center items-center">
+                {formData.htva}
+              </div>
+            </div>
+            <div className="flex justify-between mt-8">
+              <div className="text-xs font-bold">
+                Date:{" "}
+                <input
+                  type="date"
+                  className="ml-1"
+                  value={debutDate.toISOString().substring(0, 10)}
+                  onChange={(e) => setDebutDate(new Date(e.target.value))}
+                  name=""
+                  id=""
+                />
+              </div>
+              <div className="text-xs font-bold">CONFIDENTIEL</div>
+            </div>
           </div>
+        </div>
+        <div className="max-w-6xl mx-auto px-10 mt-8">
+          <button
+            onClick={createPDF}
+            className="bg-black w-36 mx-auto mb-10 md:w-48 h-14 md:h-20 rounded-b-lg hover:bg-tgbrown-600 hover:-translate-y-1 transition-all duration-300 text-white font-bold text-xl md:text-2xl flex justify-center items-center"
+          >
+            Générer PDF
+          </button>
         </div>
       </main>
     </div>

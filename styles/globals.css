@@ -33,4 +33,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 input[type="date"]:hover::-webkit-calendar-picker-indicator,
 input[type="date"]:focus-within::-webkit-calendar-picker-indicator {
     display: block;
+    margin: 0;
+    padding: 0;
 }
