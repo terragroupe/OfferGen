@@ -399,7 +399,7 @@ console.log(formData);
                       <div className="relative mt-1">
                         <Listbox.Button className="relative w-full cursor-pointer focus:outline-none sm:text-sm">
                           <img
-                            src={`/img/partner/${selectedPartner.logo}`}
+                            src={`https://offergen.vercel.app/img/partner/${selectedPartner.logo}`}
                             className="w-full"
                             alt=""
                           />
