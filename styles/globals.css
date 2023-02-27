@@ -25,3 +25,12 @@ a {
 * {
     box-sizing: border-box;
 }
+
+/* Hide default calender icon */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+}
+input[type="date"]:hover::-webkit-calendar-picker-indicator,
+input[type="date"]:focus-within::-webkit-calendar-picker-indicator {
+    display: block;
+}
