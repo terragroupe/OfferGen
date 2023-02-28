@@ -17,43 +17,43 @@ const createPDF = async () => {
   const printContent = document.getElementById("print-content").innerHTML;
   // Formating for PDF.CO With tailwind CSS
   // Tailwind Intellisense Bug ->
-  const htmlContent = `
-      <html>
-          <head>
-          <style>
-            @import url("https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-            input[type="date"]::-webkit-calendar-picker-indicator {
-              display: none;
-          }
-          .bg-tgbrown-400{
-            background-color:#A6845B;
-          }
-          .text-tgbrown-400{
-            color:#A6845B;
-          }
-          .border-tgbrown-400 {
-            border-color: #A6845B;
-        }
-          </style>
-          <script src="https://cdn.tailwindcss.com"></script>
-          <script>
-          tailwind.config = {
-            theme: {
-              extend: {
-                colors: {
-                  tgbrown-400: '#da373d',
-                }
-              }
-            }
-          }
-        </script>
-          </script>
-          </head>
-          <body>
-              ${printContent}
-          </body>
-      </html>
-  `;
+  // const htmlContent = `
+  //     <html>
+  //         <head>
+  //         <style>
+  //           @import url("https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+  //           input[type="date"]::-webkit-calendar-picker-indicator {
+  //             display: none;
+  //         }
+  //         .bg-tgbrown-400{
+  //           background-color:#A6845B;
+  //         }
+  //         .text-tgbrown-400{
+  //           color:#A6845B;
+  //         }
+  //         .border-tgbrown-400 {
+  //           border-color: #A6845B;
+  //       }
+  //         </style>
+  //         <script src="https://cdn.tailwindcss.com"></script>
+  //         <script>
+  //         tailwind.config = {
+  //           theme: {
+  //             extend: {
+  //               colors: {
+  //                 tgbrown-400: '#da373d',
+  //               }
+  //             }
+  //           }
+  //         }
+  //       </script>
+  //         </script>
+  //         </head>
+  //         <body>
+  //             ${printContent}
+  //         </body>
+  //     </html>
+  // `;
 
   const apiKey =
     "fahimfaisal1998@gmail.com_11301841ce4bc05ccea96fff26791c94e7ec723bbfa4971b6c67f990904964def68ff38b";
@@ -86,23 +86,49 @@ export default function Home() {
   const [selectedConsultant, setSelectedConsultant] = useState(Consultant[3]);
   const [selectedPartner, setSelectedPartner] = useState(Partner[1]);
   const [debutDate, setDebutDate] = useState(new Date());
-  const [formData, setFormData] = useState({htva:0});
+  const [formData, setFormData] = useState({
+    molecule: 0,
+    mois: 0,
+    cta: 0,
+    ticgn: 0,
+    htva: 100,
+    startDate:new Date(),
+    endDate:new Date(),
+    socialReason:"",
+    siren:"",
+    contactPerson:"",
+    consultantName:selectedConsultant.name,
+    consultantId:selectedConsultant.cid,
+    partnerName:selectedPartner.name,
+    site:"",
+    pce:"",
+    tarif:"",
+    profil:"",
+    car: 0,
+  });
 
-  useEffect(()=>{
-console.log(formData);
-  },[formData])
-
-  const calulateHTVA = ()=>{
+  const calculateHTVA = (upData) => {
     // Total HTVA: (Mois*car)+(Abonnement*12)+CTA+(TICGN*car)
     // a8 = (a4*car + a5*12 + a6 + a7*car)
-    var totalHTVA = (formData.molecule*formData.car)+(formData.mois*12)+formData.cta+(formData.ticgn*formData.car)
+    var totalHTVA =
+      upData.molecule * upData.car + upData.mois * 12 + upData.cta + upData.ticgn * upData.car;
     console.log("Total HTVA: " + totalHTVA);
-    setFormData({...formData, "htva":totalHTVA})
-  }
+    setFormData((old) => ({
+      ...old,
+      htva: totalHTVA,
+    }));
+    console.log("Total HTVA After: " + totalHTVA);
+  };
 
   const handleInputChange = (event) => {
-    calulateHTVA()
-    setFormData({ ...formData, [event.target.name]: event.target.value });
+    const value =
+      event.target.type === "checkbox" ? event.target.checked : parseFloat(event.target.value);
+    const name = event.target.name;
+    setFormData((prevFormData) => {
+      const updatedFormData = { ...prevFormData, [name]: value };
+      calculateHTVA(updatedFormData);
+      return updatedFormData;
+    });
   };
 
   return (
@@ -141,8 +167,8 @@ console.log(formData);
                     type="text"
                     name="socialReason"
                     id="socialReason"
-                    value={formData.socialReason || ""}
-                    onChange={(e) => handleInputChange(e)}
+                    value={formData.socialReason}
+                    onChange={handleInputChange}
                   />
                 </div>
                 <div className="flex space-x-2 group">
@@ -154,8 +180,8 @@ console.log(formData);
                     type="text"
                     name="siren"
                     id="siren"
-                    value={formData.siren || ""}
-                    onChange={(e) => handleInputChange(e)}
+                    value={formData.siren}
+                    onChange={handleInputChange}
                   />
                 </div>
                 <div className="flex space-x-2 group">
@@ -167,15 +193,12 @@ console.log(formData);
                     type="text"
                     name="contactPerson"
                     id="contactPerson"
-                    value={formData.contactPerson || ""}
-                    onChange={(e) => handleInputChange(e)}
+                    value={formData.contactPerson}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
-              <Listbox
-                value={selectedConsultant}
-                onChange={setSelectedConsultant}
-              >
+              <Listbox value={selectedConsultant} onChange={setSelectedConsultant}>
                 {({ open }) => (
                   <>
                     <div className="relative mt-1">
@@ -190,20 +213,12 @@ console.log(formData);
                             />
                           </div>
                           <div className="flex flex-col space-y-1 text-xs">
-                            <div className="font-semibold">
-                              Votre Consultant{" "}
-                            </div>
+                            <div className="font-semibold">Votre Consultant </div>
                             <div>{selectedConsultant.name}</div>
                             <div>{selectedConsultant.email}</div>
                             <div>{selectedConsultant.cid}</div>
                           </div>
                         </div>
-                        {/* <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                          <ChevronUpDownIcon
-                            className="h-5 w-5 text-gray-400"
-                            aria-hidden="true"
-                          />
-                        </span> */}
                       </Listbox.Button>
 
                       <Transition
@@ -219,9 +234,7 @@ console.log(formData);
                               key={person.id}
                               className={({ active }) =>
                                 classNames(
-                                  active
-                                    ? "text-white bg-tgbrown-300"
-                                    : "text-gray-900",
+                                  active ? "text-white bg-tgbrown-300" : "text-gray-900",
                                   "relative cursor-default select-none py-2 pl-3 pr-9"
                                 )
                               }
@@ -237,9 +250,7 @@ console.log(formData);
                                     />
                                     <span
                                       className={classNames(
-                                        selectedConsultant
-                                          ? "font-semibold"
-                                          : "font-normal",
+                                        selectedConsultant ? "font-semibold" : "font-normal",
                                         "ml-3 block truncate"
                                       )}
                                     >
@@ -250,16 +261,11 @@ console.log(formData);
                                   {selectedConsultant ? (
                                     <span
                                       className={classNames(
-                                        active
-                                          ? "text-white"
-                                          : "text-tgbrown-400",
+                                        active ? "text-white" : "text-tgbrown-400",
                                         "absolute inset-y-0 right-0 flex items-center pr-4"
                                       )}
                                     >
-                                      <CheckIcon
-                                        className="h-5 w-5"
-                                        aria-hidden="true"
-                                      />
+                                      <CheckIcon className="h-5 w-5" aria-hidden="true" />
                                     </span>
                                   ) : null}
                                 </>
@@ -274,50 +280,50 @@ console.log(formData);
               </Listbox>
             </div>
             <div className="grid grid-cols-5 text-white bg-tgbrown-400 rounded-t-md mt-6">
-              <div className="text-center text-sm font-bold border-r py-1">
-                Site
-              </div>
-              <div className="text-center text-sm font-bold border-r py-1">
-                PCE
-              </div>
-              <div className="text-center text-sm font-bold border-r py-1">
-                Tarif
-              </div>
-              <div className="text-center text-sm font-bold border-r py-1">
-                Profil
-              </div>
+              <div className="text-center text-sm font-bold border-r py-1">Site</div>
+              <div className="text-center text-sm font-bold border-r py-1">PCE</div>
+              <div className="text-center text-sm font-bold border-r py-1">Tarif</div>
+              <div className="text-center text-sm font-bold border-r py-1">Profil</div>
               <div className="text-center text-sm font-bold py-1">CAR(MWH)</div>
             </div>
             <div className="grid grid-cols-5 border overflow-hidden border-tgbrown-400 rounded-b-md">
               <textarea
                 className="resize-none border-r border-tgbrown-400"
-                name=""
-                id=""
+                name="site"
+                id="site"
                 maxLength={70}
                 cols="35"
                 rows="2"
+                value={formData.site}
+                onChange={handleInputChange}
               ></textarea>
               <input
                 className="w-full py-3 text-center border-r border-tgbrown-400"
                 type="number"
                 maxLength={8}
                 min={1}
-                name=""
-                id=""
+                name="pce"
+                id="pce"
+                value={formData.pce}
+                onChange={handleInputChange}
               />
               <input
                 className="w-full py-3 text-center border-r border-tgbrown-400"
                 type="number"
                 min={1}
-                name=""
-                id=""
+                name="tarif"
+                id="tarif"
+                value={formData.tarif}
+                onChange={handleInputChange}
               />
               <input
                 className="w-full py-3 text-center border-r border-tgbrown-400"
                 type="text"
                 maxLength={20}
-                name=""
-                id=""
+                name="profil"
+                id="profil"
+                value={formData.profil}
+                onChange={handleInputChange}
               />
               <input
                 className="w-full py-3 text-center"
@@ -325,44 +331,34 @@ console.log(formData);
                 min={1}
                 name="car"
                 id="car"
-                value={formData.car || ""}
-                onChange={(e) => handleInputChange(e)}
+                value={formData.car}
+                onChange={handleInputChange}
               />
             </div>
 
             <div className="mt-6">
-              <h1 className="text-tgbrown-400 font-extrabold text-base">
-                LES OFFRES RETENUES
-              </h1>
+              <h1 className="text-tgbrown-400 font-extrabold text-base">LES OFFRES RETENUES</h1>
               <div className="text-tgbrown-400 font-semibold text-xs">
                 {/* {debutDate.toLocaleDateString('en-UK',{ day: '2-digit', month: '2-digit', year: 'numeric' })} */}
                 Début de fourniture au
                 <input
                   type="date"
                   className="ml-1"
-                  value={debutDate.toISOString().substring(0, 10)}
-                  onChange={(e) => setDebutDate(new Date(e.target.value))}
-                  name=""
-                  id=""
+                  value={formData.startDate.toISOString().substring(0, 10)}
+                  onChange={(e) => setFormData(old => ({...old, startDate:new Date(e.target.value)}))}
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-7 text-white bg-tgbrown-400 rounded-t-md mt-6">
-              <div className="text-center text-[11px] font-bold border-r py-1">
-                Fournisseurs
-              </div>
+              <div className="text-center text-[11px] font-bold border-r py-1">Fournisseurs</div>
               <div className="grid grid-rows-2">
-                <div className="text-center text-[11px] font-bold border-r py-1">
-                  Engagement
-                </div>
+                <div className="text-center text-[11px] font-bold border-r py-1">Engagement</div>
                 <div className="text-center text-[11px] font-semibold border-t border-r py-1">
                   Fin de Fourniture
                 </div>
               </div>
-              <div className="text-center text-[11px] font-bold border-r py-1">
-                Type d’Offre
-              </div>
+              <div className="text-center text-[11px] font-bold border-r py-1">Type d’Offre</div>
               <div className="text-center text-[11px] font-bold border-r py-1">
                 Prix Molécule MWh
               </div>
@@ -372,9 +368,7 @@ console.log(formData);
                 Mois
               </div>
               <div className="grid grid-rows-2">
-                <div className="text-center text-[11px] font-bold border-r py-1">
-                  Taxes
-                </div>
+                <div className="text-center text-[11px] font-bold border-r py-1">Taxes</div>
                 <div className="grid grid-cols-2">
                   <div className="text-center text-[11px] font-semibold border-t border-r py-1">
                     CTA/An
@@ -384,9 +378,7 @@ console.log(formData);
                   </div>
                 </div>
               </div>
-              <div className="text-center text-[11px] font-bold py-1">
-                Total HTVA
-              </div>
+              <div className="text-center text-[11px] font-bold py-1">Total HTVA</div>
             </div>
             <div className="text-center text-tgbrown-400 text-xl font-extrabold border-l border-r border-tgbrown-400 py-3">
               NOS OFFRES
@@ -418,9 +410,7 @@ console.log(formData);
                                 key={person.id}
                                 className={({ active }) =>
                                   classNames(
-                                    active
-                                      ? "text-white bg-tgbrown-300"
-                                      : "text-gray-900",
+                                    active ? "text-white bg-tgbrown-300" : "text-gray-900",
                                     "relative cursor-default select-none"
                                   )
                                 }
@@ -452,14 +442,14 @@ console.log(formData);
                   <input
                     type="date"
                     className="text-center"
-                    value={debutDate.toISOString().substring(0, 10)}
-                    onChange={(e) => setDebutDate(new Date(e.target.value))}
+                    value={formData.endDate.toISOString().substring(0, 10)}
+                    onChange={(e) => setFormData(old => ({...old, endDate:new Date(e.target.value)}))}
                     name=""
                     id=""
                   />
                   <br />
-                  {(debutDate.getFullYear() - new Date().getFullYear()) * 12 +
-                    (debutDate.getMonth() - new Date().getMonth())}{" "}
+                  {(formData.endDate.getFullYear() - formData.startDate.getFullYear()) * 12 +
+                    (formData.endDate.getMonth() - formData.startDate.getMonth())}{" "}
                   mois
                 </div>
               </div>
@@ -481,8 +471,8 @@ console.log(formData);
                 min={1}
                 name="molecule"
                 id="molecule"
-                value={formData.molecule || ""}
-                onChange={(e) => handleInputChange(e)}
+                value={formData.molecule}
+                onChange={handleInputChange}
               />
               <input
                 className="w-full text-center border-r border-tgbrown-400"
@@ -490,8 +480,8 @@ console.log(formData);
                 min={1}
                 name="mois"
                 id="mois"
-                value={formData.mois || ""}
-                onChange={(e) => handleInputChange(e)}
+                value={formData.mois}
+                onChange={handleInputChange}
               />
 
               <div className="grid grid-cols-2">
@@ -501,8 +491,8 @@ console.log(formData);
                   min={1}
                   name="cta"
                   id="cta"
-                  value={formData.cta || ""}
-                  onChange={(e) => handleInputChange(e)}
+                  value={formData.cta}
+                  onChange={handleInputChange}
                 />
                 <input
                   className="w-full text-center border-r border-tgbrown-400"
@@ -510,13 +500,11 @@ console.log(formData);
                   min={1}
                   name="ticgn"
                   id="ticgn"
-                  value={formData.ticgn || ""}
-                  onChange={(e) => handleInputChange(e)}
+                  value={formData.ticgn}
+                  onChange={handleInputChange}
                 />
               </div>
-              <div className="flex justify-center items-center">
-                {formData.htva}
-              </div>
+              <div className="flex justify-center items-center">{formData.htva}</div>
             </div>
             <div className="flex justify-between mt-8">
               <div className="text-xs font-bold">
