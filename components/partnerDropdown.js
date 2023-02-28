@@ -8,16 +8,34 @@ function classNames(...classes) {
   
 
 const ConsultantDropdown = (props) => {
-    const { selectedPartner, setSelectedPartner,Partner } = props.partnerState;
+    const { formData, setFormData, Partner } = props.partnerState;
 
   return (
-    <Listbox value={selectedPartner} onChange={setSelectedPartner}>
+    <Listbox value={props.item.partnerName} onChange={(e)=>{
+      console.log("objectee>",e);
+      setFormData((prevFormData) => {
+        const updatedOffers = prevFormData.offers.map((offer, i) => {
+          if (i === props.index) {
+            return {
+              ...offer,
+              "partnerName": e.name,
+            };
+          }
+          return offer;
+        });
+        const updatedFormData = {
+          ...prevFormData,
+          offers: updatedOffers,
+        };
+        return updatedFormData;
+      });
+    }}>
                   {({ open }) => (
                     <>
                       <div className="relative">
                         <Listbox.Button className="relative w-full cursor-pointer focus:outline-none sm:text-sm">
                           <img
-                            src={`https://offergen.vercel.app/img/partner/${selectedPartner.logo}`}
+                            src={`https://offergen.vercel.app/img/partner/${props.item.partnerName.toLowerCase()}.webp`}
                             className="w-full"
                             alt=""
                           />

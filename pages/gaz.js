@@ -79,19 +79,7 @@ const createPDF = async () => {
 
 export default function Home() {
   const [selectedConsultant, setSelectedConsultant] = useState(Consultant[3]);
-  const [selectedPartner, setSelectedPartner] = useState(Partner[1]);
   const [debutDate, setDebutDate] = useState(new Date());
-
-  const consultantState = {
-    selectedConsultant,
-    setSelectedConsultant,
-    Consultant,
-  };
-  const partnerState = {
-    selectedPartner,
-    setSelectedPartner,
-    Partner,
-  };
 
   const [formData, setFormData] = useState({
     socialReason: "",
@@ -104,6 +92,7 @@ export default function Home() {
     profil: "",
     car: 0,
     startDate: new Date(),
+    placedDate: new Date(),
     offers: [
       {
         molecule: 0,
@@ -112,21 +101,23 @@ export default function Home() {
         ticgn: 0,
         htva: 0,
         type: "fix",
-        partnerName: selectedPartner.name,
-        endDate: new Date(),
-      },
-      {
-        molecule: 0,
-        mois: 0,
-        cta: 0,
-        ticgn: 0,
-        htva: 0,
-        type: "fix",
-        partnerName: selectedPartner.name,
+        partnerName: "Alpiq",
         endDate: new Date(),
       },
     ],
   });
+
+  const consultantState = {
+    selectedConsultant,
+    setSelectedConsultant,
+    Consultant,
+  };
+  const partnerState = {
+    formData,
+    setFormData,
+    Partner,
+  };
+
   useEffect(() => {
     console.log("formData>>", formData);
   }, [formData]);
@@ -176,10 +167,10 @@ export default function Home() {
   const calculateHTVA = (upData) => {
     const updatedOffers = upData.offers.map((offer) => {
       const offerHTVA =
-        (offer.molecule * upData.car) +
-        (offer.mois * 12) +
+        offer.molecule * upData.car +
+        offer.mois * 12 +
         offer.cta +
-        (offer.ticgn * upData.car);
+        offer.ticgn * upData.car;
       return {
         ...offer,
         htva: offerHTVA,
@@ -190,6 +181,24 @@ export default function Home() {
       ...old,
       offers: updatedOffers,
     }));
+  };
+  const handleDateInput = (e, index) => {
+    const value = e.target.value;
+    setFormData((prevFormData) => {
+      const updatedOffers = prevFormData.offers.map((offer, i) => {
+        if (i !== index) return offer; // leave other offers unchanged
+        return {
+          ...offer,
+          endDate: new Date(value),
+        };
+      });
+
+      const updatedFormData = {
+        ...prevFormData,
+        offers: updatedOffers,
+      };
+      return updatedFormData;
+    });
   };
 
   const handleOfferInput = (event, index) => {
@@ -428,11 +437,22 @@ export default function Home() {
               NOS OFFRES
             </div>
             {formData.offers.map((item, index) => {
+              // Check if item is the last for CSS changes
+              const isLast = formData.offers.length - 1 === index;
+              const oglength = formData.offers.length;
               return (
                 <>
-                  <div className="grid grid-cols-7 border text-[11px] font-semibold border-tgbrown-400 rounded-b-md">
+                  <div
+                    className={`grid grid-cols-7 border text-[11px] font-semibold border-r-tgbrown-400 border-l-tgbrown-400 border-t-tgbrown-400 ${
+                      isLast && "rounded-b-md border-b-tgbrown-400"
+                    }`}
+                  >
                     <div className="text-center border-r border-tgbrown-400">
-                      <PartnerDropdown partnerState={partnerState} />
+                      <PartnerDropdown
+                        partnerState={partnerState}
+                        index={index}
+                        item={item}
+                      />
                     </div>
                     <div className="flex items-center justify-center text-center border-r border-tgbrown-400">
                       <div className="text-center">
@@ -440,35 +460,38 @@ export default function Home() {
                         <input
                           type="date"
                           className="text-center"
-                          value={formData.offers[index].endDate
-                            .toISOString()
-                            .substring(0, 10)}
-                          onChange={(e) =>
-                            setFormData((old) => ({
-                              ...old,
-                              endDate: new Date(e.target.value),
-                            }))
-                          }
-                          name=""
-                          id=""
+                          value={item.endDate.toISOString().substring(0, 10)}
+                          onChange={(e) => handleDateInput(e, index)}
                         />
                         <br />
-                        {(formData.offers[index].endDate.getFullYear() -
+                        {(item.endDate.getFullYear() -
                           formData.startDate.getFullYear()) *
                           12 +
-                          (formData.offers[index].endDate.getMonth() -
-                            formData.startDate.getMonth())}{" "}
+                          (item.endDate.getMonth() -
+                            formData.startDate.getMonth()) +
+                          1}{" "}
                         mois
                       </div>
                     </div>
                     <select
                       id="countries"
+                      name="type"
+                      defaultValue={"fix"}
+                      onChange={(e) => handleOfferInput(e, index)}
                       className="w-full appearance-none text-center border-r border-tgbrown-400"
                     >
-                      <option className="text-base" selected value="fix">
+                      <option
+                        className="text-base"
+                        selected={item.type === "fix"}
+                        value="fix"
+                      >
                         Prix Fixe
                       </option>
-                      <option className="text-base" value="var">
+                      <option
+                        className="text-base"
+                        selected={item.type === "var"}
+                        value="var"
+                      >
                         Prix Variable
                       </option>
                     </select>
@@ -479,7 +502,7 @@ export default function Home() {
                       min={1}
                       name="molecule"
                       id="molecule"
-                      value={formData.offers[index].molecule}
+                      value={item.molecule}
                       onChange={(e) => handleOfferInput(e, index)}
                     />
                     <input
@@ -488,7 +511,7 @@ export default function Home() {
                       min={1}
                       name="mois"
                       id="mois"
-                      value={formData.offers[index].mois}
+                      value={item.mois}
                       onChange={(e) => handleOfferInput(e, index)}
                     />
 
@@ -499,7 +522,7 @@ export default function Home() {
                         min={1}
                         name="cta"
                         id="cta"
-                        value={formData.offers[index].cta}
+                        value={item.cta}
                         onChange={(e) => handleOfferInput(e, index)}
                       />
                       <input
@@ -508,12 +531,39 @@ export default function Home() {
                         min={1}
                         name="ticgn"
                         id="ticgn"
-                        value={formData.offers[index].ticgn}
+                        value={item.ticgn}
                         onChange={(e) => handleOfferInput(e, index)}
                       />
                     </div>
-                    <div className="flex justify-center items-center">
-                      {formData.offers[index].htva}
+                    <div className="flex justify-center items-center relative group">
+                      {item.htva}
+                      {isLast && oglength < 3 && (
+                        <div className="absolute hidden group-hover:block hover:scale-110 transition-all duration-300 -bottom-3 right-0 translate-x-1/2">
+                          <button
+                            className="bg-tgbrown-400 text-white rounded-full w-5 h-5"
+                            onClick={() => {
+                              setFormData((prevState) => ({
+                                ...prevState,
+                                offers: [
+                                  ...prevState.offers,
+                                  {
+                                    molecule: 0,
+                                    mois: 0,
+                                    cta: 0,
+                                    ticgn: 0,
+                                    htva: 0,
+                                    type: "fix",
+                                    partnerName: "Alpiq",
+                                    endDate: new Date(),
+                                  },
+                                ],
+                              }));
+                            }}
+                          >
+                            +
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </>
@@ -527,8 +577,13 @@ export default function Home() {
                 <input
                   type="date"
                   className="ml-1"
-                  value={debutDate.toISOString().substring(0, 10)}
-                  onChange={(e) => setDebutDate(new Date(e.target.value))}
+                  value={formData.placedDate.toISOString().substring(0, 10)}
+                  onChange={(e) =>
+                    setFormData((old) => ({
+                      ...old,
+                      placedDate: new Date(e.target.value),
+                    }))
+                  }
                   name=""
                   id=""
                 />
