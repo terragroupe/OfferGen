@@ -14,7 +14,7 @@ Prix Molécule (MWh): Number(Integer)
 Abonnement/Mois: Number(Integer)
 Taxes => CTA/AN: Number(Integer)
 Taxes => TICGN: Number(Integer)
-Total HTVA: (Mois*car)+(Abonnement*12)+CTA+(TICGN*car)
+Total HTVA: (Molecule*car)+(mois*12)+CTA+(TICGN*car)
 a8 = (a4*car + a5*12 + a6 + a7*car)
 
 Date: Date Picker (Today)
