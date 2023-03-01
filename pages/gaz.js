@@ -167,13 +167,13 @@ export default function Home() {
   const calculateHTVA = (upData) => {
     const updatedOffers = upData.offers.map((offer) => {
       const offerHTVA =
-        offer.molecule * upData.car +
-        offer.mois * 12 +
-        offer.cta +
-        offer.ticgn * upData.car;
+        (parseFloat(offer.molecule) * parseFloat(upData.car)) +
+        (parseFloat(offer.mois) * 12) +
+        parseFloat(offer.cta) +
+        (parseFloat(offer.ticgn) * parseFloat(upData.car))
       return {
         ...offer,
-        htva: offerHTVA,
+        htva: parseFloat(offerHTVA).toFixed(2),
       };
     });
 
@@ -324,7 +324,7 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-5 border overflow-hidden border-tgbrown-400 rounded-b-md">
               <textarea
-                className="resize-none text-center border-r border-tgbrown-400"
+                className="resize-none text-center border-r border-tgbrown-400 py-3"
                 name="site"
                 id="site"
                 maxLength={70}
@@ -561,6 +561,25 @@ export default function Home() {
                             }}
                           >
                             +
+                          </button>
+                        </div>
+                      )}
+                      {oglength > 1 && (
+                        <div className="absolute hidden group-hover:block hover:scale-110 transition-all duration-300 top-1/2 -right-1 -translate-y-1/2 translate-x-1/2">
+                          <button
+                            className="bg-red-600 text-white rounded-full w-5 h-5"
+                            onClick={() => {
+                              setFormData((prevState) => {
+                                const updatedOffers = [...prevState.offers];
+                                updatedOffers.splice(index, 1);
+                                return {
+                                  ...prevState,
+                                  offers: updatedOffers,
+                                };
+                              });
+                            }}
+                          >
+                            X
                           </button>
                         </div>
                       )}
