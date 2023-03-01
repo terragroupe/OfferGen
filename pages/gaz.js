@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
 import { useEffect } from "react";
+import { Dna } from "react-loader-spinner";
 
 import { Fragment, useState } from "react";
 
@@ -12,76 +13,13 @@ import Partner from "../data/partner.json";
 import ConsultantDropdown from "../components/consultantDropdown";
 import PartnerDropdown from "../components/partnerDropdown";
 
-const createPDF = async () => {
-  const printContent = document.getElementById("print-content").innerHTML;
-  // Formating for PDF.CO With tailwind CSS
-  // Tailwind Intellisense Bug ->
-  // const htmlContent = `
-  //     <html>
-  //         <head>
-  //         <style>
-  //           @import url("https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-  //           input[type="date"]::-webkit-calendar-picker-indicator {
-  //             display: none;
-  //         }
-  //         .bg-tgbrown-400{
-  //           background-color:#A6845B;
-  //         }
-  //         .text-tgbrown-400{
-  //           color:#A6845B;
-  //         }
-  //         .border-tgbrown-400 {
-  //           border-color: #A6845B;
-  //       }
-  //         </style>
-  //         <script src="https://cdn.tailwindcss.com"></script>
-  //         <script>
-  //         tailwind.config = {
-  //           theme: {
-  //             extend: {
-  //               colors: {
-  //                 tgbrown-400: '#da373d',
-  //               }
-  //             }
-  //           }
-  //         }
-  //       </script>
-  //         </script>
-  //         </head>
-  //         <body>
-  //             ${printContent}
-  //         </body>
-  //     </html>
-  // `;
-
-  const apiKey =
-    "fahimfaisal1998@gmail.com_11301841ce4bc05ccea96fff26791c94e7ec723bbfa4971b6c67f990904964def68ff38b";
-  const endpoint = "https://api.pdf.co/v1/pdf/convert/from/html";
-
-  const response = await axios.post(
-    endpoint,
-    {
-      html: htmlContent,
-      name: "document.pdf",
-      margins: "8px 8px 8px 8px",
-      paperSize: "A4",
-      orientation: "Portrait",
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-      },
-    }
-  );
-  console.log(response.data);
-};
-
 export default function Home() {
   const [selectedConsultant, setSelectedConsultant] = useState(Consultant[3]);
-  const [submittedOfferId, setSubmittedOfferId] = useState(null);
   const [loadingAirtable, setLoadingAirtable] = useState(false);
   const [loadingPdf, setLoadingPdf] = useState(false);
+  // const [pdfUrl, setPdfUrl] = useState(null)
+  // const [airtabelOgId, setAirtabelOgId] = useState(null)
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     socialReason: "",
@@ -109,20 +47,82 @@ export default function Home() {
     ],
   });
 
+  // States For Consultant Dropdown
   const consultantState = {
     selectedConsultant,
     setSelectedConsultant,
     Consultant,
   };
+
+  // States For Partner Dropdown
   const partnerState = {
     formData,
     setFormData,
     Partner,
   };
 
+  // Keep Check Forms Data
   useEffect(() => {
     console.log("formData>>", formData);
   }, [formData]);
+  
+
+  // Call PDF.CO API and generate pdf
+  const createPDF = async () => {
+    const printContent = document.getElementById("print-content").innerHTML;
+    // Formating for PDF.CO With tailwind CSS
+    // Tailwind Intellisense Bug ->
+    const htmlContent = `
+  <html>
+  <head>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        display: none;
+      }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "tgbrown-400": "#a6845b",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body>
+    ${printContent}
+  </body>
+</html>
+  `;
+
+    const apiKey =
+      "fahimfaisal1998@gmail.com_11301841ce4bc05ccea96fff26791c94e7ec723bbfa4971b6c67f990904964def68ff38b";
+    const endpoint = "https://api.pdf.co/v1/pdf/convert/from/html";
+
+    const response = await axios.post(
+      endpoint,
+      {
+        html: htmlContent,
+        name: "document.pdf",
+        margins: "8px 8px 8px 8px",
+        paperSize: "A4",
+        orientation: "Portrait",
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+        },
+      }
+    );
+    console.log(response.data.url);
+    addOfferGenAirtable(response.data.url);
+  };
 
   // Add Data to OfferGen Table - AIRTABLE
   const addNosOffresAirtable = async (offGenId) => {
@@ -133,10 +133,12 @@ export default function Home() {
           records: formData.offers.map((item) => {
             return {
               fields: {
-                ID:`OG${Date.now().toString().substring(4)}`,
+                ID: `OG${Date.now().toString().substring(4)}`,
                 OGID: [offGenId],
                 Fournisseurs: item.partnerName,
-                DebutDeFourniture: formData.startDate.toISOString().substring(0, 10),
+                DebutDeFourniture: formData.startDate
+                  .toISOString()
+                  .substring(0, 10),
                 FinDeFourniture: item.endDate.toISOString().substring(0, 10),
                 Type: item.type,
                 CAR: formData.car.toString(),
@@ -157,19 +159,16 @@ export default function Home() {
         }
       )
       .then((res) => {
-        // setIsLoading(false);
         console.log("Nosres>>", res.data.id);
-        // setSubmittedOfferId(res.data.id);
-        // addNosOffresAirtable(res.data.id);
+        setIsLoading(false);
       })
       .catch((err) => {
-        // setIsLoading(false);
         console.log("Err>>", err);
       });
   };
 
   // Add Data to OfferGen Table - AIRTABLE
-  const addOfferGenAirtable = async () => {
+  const addOfferGenAirtable = async (pdfUrl) => {
     await axios
       .post(
         "https://api.airtable.com/v0/app9O3VyWFlvjeBfX/OfferGen",
@@ -186,7 +185,7 @@ export default function Home() {
             Profil: formData.profil,
             CAR: formData.car.toString(),
             PlacedDate: formData.placedDate.toISOString().substring(0, 10),
-            PDF: "",
+            PDF: pdfUrl,
           },
         },
         {
@@ -197,21 +196,20 @@ export default function Home() {
         }
       )
       .then((res) => {
-        // setIsLoading(false);
         // console.log("res>>", res.data.id);
-        setSubmittedOfferId(res.data.id);
         addNosOffresAirtable(res.data.id);
       })
       .catch((err) => {
-        // setIsLoading(false);
         console.log("Err>>", err);
       });
   };
 
   const handleSubmitButton = () => {
-    addOfferGenAirtable();
+    setIsLoading(true);
+    createPDF();
   };
 
+  // Function For Calculating HTVA
   const calculateHTVA = (upData) => {
     const updatedOffers = upData.offers.map((offer) => {
       const offerHTVA =
@@ -230,6 +228,8 @@ export default function Home() {
       offers: updatedOffers,
     }));
   };
+
+  // Handle Date Input
   const handleDateInput = (e, index) => {
     const value = e.target.value;
     setFormData((prevFormData) => {
@@ -249,6 +249,7 @@ export default function Home() {
     });
   };
 
+  // handle Inputs on Nos Offres
   const handleOfferInput = (event, index) => {
     const value = event.target.value;
     const name = event.target.name;
@@ -272,6 +273,7 @@ export default function Home() {
     });
   };
 
+  // Handle Top input Fields
   const handleInputChange = (event) => {
     const value = event.target.value;
     const name = event.target.name;
@@ -306,6 +308,7 @@ export default function Home() {
             />
           </Link>
           <div className="max-w-6xl mx-auto px-10 mt-8">
+            {/* First Section - Comapany & Consultant Information */}
             <div className="flex justify-between">
               <div className="text-xs flex flex-col space-y-1">
                 <div className="flex space-x-1 group">
@@ -355,6 +358,8 @@ export default function Home() {
               </div>
               <ConsultantDropdown consultantState={consultantState} />
             </div>
+
+            {/* Second Section */}
             <div className="grid grid-cols-5 text-white bg-tgbrown-400 rounded-t-md mt-6">
               <div className="text-center text-sm font-bold border-r py-1">
                 Site
@@ -661,10 +666,22 @@ export default function Home() {
         </div>
         <div className="max-w-6xl mx-auto px-10 mt-8">
           <button
+            disabled={isLoading}
             onClick={handleSubmitButton}
             className="bg-black w-36 mx-auto mb-10 md:w-48 h-14 md:h-20 rounded-b-lg hover:bg-tgbrown-600 hover:-translate-y-1 transition-all duration-300 text-white font-bold text-xl md:text-2xl flex justify-center items-center"
           >
-            Générer PDF
+            {isLoading ? (
+              <Dna
+                visible={true}
+                height="80"
+                width="80"
+                ariaLabel="dna-loading"
+                wrapperStyle={{}}
+                wrapperClass="dna-wrapper"
+              />
+            ) : (
+              " Générer PDF"
+            )}
           </button>
         </div>
       </main>
