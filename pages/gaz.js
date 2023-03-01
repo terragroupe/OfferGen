@@ -324,7 +324,7 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-5 border overflow-hidden border-tgbrown-400 rounded-b-md">
               <textarea
-                className="resize-none text-center border-r border-tgbrown-400 py-3"
+                className="resize-none focus-within:resize-y text-center border-r border-tgbrown-400 py-3"
                 name="site"
                 id="site"
                 maxLength={70}
