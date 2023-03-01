@@ -2,9 +2,8 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
-import { useEffect,useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Dna } from "react-loader-spinner";
-import {jsPDF} from "jspdf";
 
 import { Fragment, useState } from "react";
 
@@ -15,8 +14,6 @@ import ConsultantDropdown from "../components/consultantDropdown";
 import PartnerDropdown from "../components/partnerDropdown";
 
 export default function Home() {
-  const pdfRef = useRef(null);
-
   const [selectedConsultant, setSelectedConsultant] = useState(Consultant[3]);
   const [loadingAirtable, setLoadingAirtable] = useState(false);
   const [loadingPdf, setLoadingPdf] = useState(false);
@@ -68,7 +65,6 @@ export default function Home() {
   useEffect(() => {
     console.log("formData>>", formData);
   }, [formData]);
-  
 
   // Call PDF.CO API and generate pdf
   const createPDF = async () => {
@@ -104,7 +100,7 @@ export default function Home() {
   `;
 
     const apiKey =
-      "fahimfaisal1998@gmail.com_11301841ce4bc05ccea96fff26791c94e7ec723bbfa4971b6c67f990904964def68ff38b";
+      "whrismyphn@gmail.com_adb9df41092f46dc6fe2ce3f130e7ae32a5eaf17d0ef805fbd024486bd6514ad3f0280de";
     const endpoint = "https://api.pdf.co/v1/pdf/convert/from/html";
 
     const response = await axios.post(
@@ -123,20 +119,12 @@ export default function Home() {
         },
       }
     );
-    console.log(response.data.url);
-    const kkkdk = downloadPdf(response.data.url).then(x=> console.log(URL.createObjectURL(x)))
-   ;
-    // addOfferGenAirtable(kkkdk);
+    // console.log(response.data.url);
+    addOfferGenAirtable(response.data.url)
+   
   };
-  const downloadPdf = async (uurrl) => {
-    try {
-      const response = await axios.get(uurrl, { responseType: 'blob' });
-      const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
-      return pdfBlob;
-    } catch (error) {
-      console.error(error);
-    }
-  };
+
+
 
   // Add Data to OfferGen Table - AIRTABLE
   const addNosOffresAirtable = async (offGenId) => {
@@ -199,7 +187,7 @@ export default function Home() {
             Profil: formData.profil,
             CAR: formData.car.toString(),
             PlacedDate: formData.placedDate.toISOString().substring(0, 10),
-            PDF: pdfUrl,
+            PDF: [{url:pdfUrl}],
           },
         },
         {
@@ -302,17 +290,6 @@ export default function Home() {
     });
   };
 
-  const handleDownload = () => {
-    const content = pdfRef.current;
-
-    const doc = new jsPDF();
-    doc.html(content, {
-        callback: function (doc) {
-            doc.save('sample.pdf');
-        },
-        html2canvas: { scale: 0.25 }
-    });
-};
 
   return (
     <div>
@@ -323,7 +300,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <div id="print-content" ref={pdfRef} className="max-w-7xl mx-auto">
+        <div id="print-content" className="max-w-7xl mx-auto">
           <Link href={`/`}>
             <img
               className="w-full"
@@ -709,7 +686,6 @@ export default function Home() {
               " Générer PDF"
             )}
           </button>
-          <button onClick={handleDownload}>Download</button>
         </div>
       </main>
     </div>
