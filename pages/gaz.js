@@ -79,7 +79,9 @@ const createPDF = async () => {
 
 export default function Home() {
   const [selectedConsultant, setSelectedConsultant] = useState(Consultant[3]);
-  const [debutDate, setDebutDate] = useState(new Date());
+  const [submittedOfferId, setSubmittedOfferId] = useState(null);
+  const [loadingAirtable, setLoadingAirtable] = useState(false);
+  const [loadingPdf, setLoadingPdf] = useState(false);
 
   const [formData, setFormData] = useState({
     socialReason: "",
@@ -123,6 +125,50 @@ export default function Home() {
   }, [formData]);
 
   // Add Data to OfferGen Table - AIRTABLE
+  const addNosOffresAirtable = async (offGenId) => {
+    await axios
+      .post(
+        "https://api.airtable.com/v0/app9O3VyWFlvjeBfX/NosOffres",
+        {
+          records: formData.offers.map((item) => {
+            return {
+              fields: {
+                ID:`OG${Date.now().toString().substring(4)}`,
+                OGID: [offGenId],
+                Fournisseurs: item.partnerName,
+                DebutDeFourniture: formData.startDate.toISOString().substring(0, 10),
+                FinDeFourniture: item.endDate.toISOString().substring(0, 10),
+                Type: item.type,
+                CAR: formData.car.toString(),
+                Molecule: item.molecule.toString(),
+                Mois: item.mois.toString(),
+                CTA: item.cta.toString(),
+                TICGN: item.ticgn.toString(),
+                TotalHTVA: item.htva.toString(),
+              },
+            };
+          }),
+        },
+        {
+          headers: {
+            Authorization:
+              "Bearer patq4GvFG3SogJRe7.3d611c4fddbe4b4139956d95b0357a40b120168821b3a5f698a5fc5db7e554d1",
+          },
+        }
+      )
+      .then((res) => {
+        // setIsLoading(false);
+        console.log("Nosres>>", res.data.id);
+        // setSubmittedOfferId(res.data.id);
+        // addNosOffresAirtable(res.data.id);
+      })
+      .catch((err) => {
+        // setIsLoading(false);
+        console.log("Err>>", err);
+      });
+  };
+
+  // Add Data to OfferGen Table - AIRTABLE
   const addOfferGenAirtable = async () => {
     await axios
       .post(
@@ -138,8 +184,8 @@ export default function Home() {
             PCE: formData.pce,
             Tarif: formData.tarif,
             Profil: formData.profil,
-            CAR: formData.car,
-            PlacedDate: debutDate.toISOString().substring(0, 10),
+            CAR: formData.car.toString(),
+            PlacedDate: formData.placedDate.toISOString().substring(0, 10),
             PDF: "",
           },
         },
@@ -152,7 +198,9 @@ export default function Home() {
       )
       .then((res) => {
         // setIsLoading(false);
-        console.log("res>>", res);
+        // console.log("res>>", res.data.id);
+        setSubmittedOfferId(res.data.id);
+        addNosOffresAirtable(res.data.id);
       })
       .catch((err) => {
         // setIsLoading(false);
@@ -167,10 +215,10 @@ export default function Home() {
   const calculateHTVA = (upData) => {
     const updatedOffers = upData.offers.map((offer) => {
       const offerHTVA =
-        (parseFloat(offer.molecule) * parseFloat(upData.car)) +
-        (parseFloat(offer.mois) * 12) +
+        parseFloat(offer.molecule) * parseFloat(upData.car) +
+        parseFloat(offer.mois) * 12 +
         parseFloat(offer.cta) +
-        (parseFloat(offer.ticgn) * parseFloat(upData.car))
+        parseFloat(offer.ticgn) * parseFloat(upData.car);
       return {
         ...offer,
         htva: parseFloat(offerHTVA).toFixed(2),
