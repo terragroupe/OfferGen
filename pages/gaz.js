@@ -2,8 +2,9 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect,useRef } from "react";
 import { Dna } from "react-loader-spinner";
+import {jsPDF} from "jspdf";
 
 import { Fragment, useState } from "react";
 
@@ -14,6 +15,8 @@ import ConsultantDropdown from "../components/consultantDropdown";
 import PartnerDropdown from "../components/partnerDropdown";
 
 export default function Home() {
+  const pdfRef = useRef(null);
+
   const [selectedConsultant, setSelectedConsultant] = useState(Consultant[3]);
   const [loadingAirtable, setLoadingAirtable] = useState(false);
   const [loadingPdf, setLoadingPdf] = useState(false);
@@ -121,7 +124,18 @@ export default function Home() {
       }
     );
     console.log(response.data.url);
-    addOfferGenAirtable(response.data.url);
+    const kkkdk = downloadPdf(response.data.url).then(x=> console.log(URL.createObjectURL(x)))
+   ;
+    // addOfferGenAirtable(kkkdk);
+  };
+  const downloadPdf = async (uurrl) => {
+    try {
+      const response = await axios.get(uurrl, { responseType: 'blob' });
+      const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
+      return pdfBlob;
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Add Data to OfferGen Table - AIRTABLE
@@ -288,6 +302,18 @@ export default function Home() {
     });
   };
 
+  const handleDownload = () => {
+    const content = pdfRef.current;
+
+    const doc = new jsPDF();
+    doc.html(content, {
+        callback: function (doc) {
+            doc.save('sample.pdf');
+        },
+        html2canvas: { scale: 0.25 }
+    });
+};
+
   return (
     <div>
       <Head>
@@ -297,7 +323,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <div id="print-content" className="max-w-7xl mx-auto">
+        <div id="print-content" ref={pdfRef} className="max-w-7xl mx-auto">
           <Link href={`/`}>
             <img
               className="w-full"
@@ -589,7 +615,7 @@ export default function Home() {
                       />
                     </div>
                     <div className="flex justify-center items-center relative group">
-                      {item.htva}
+                      {item.htva}€
                       {isLast && oglength < 3 && (
                         <div className="absolute hidden group-hover:block hover:scale-110 transition-all duration-300 -bottom-3 right-0 translate-x-1/2">
                           <button
@@ -683,6 +709,7 @@ export default function Home() {
               " Générer PDF"
             )}
           </button>
+          <button onClick={handleDownload}>Download</button>
         </div>
       </main>
     </div>
