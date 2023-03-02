@@ -87,7 +87,7 @@ export default function Home() {
             theme: {
               extend: {
                 colors: {
-                  "tgbrown-400": "#a6845b",
+                  "tgbrown-400": "#484b56",
                 },
               },
             },
@@ -419,7 +419,7 @@ export default function Home() {
               />
               <input
                 className="w-full py-3 text-center border-r border-tgbrown-400"
-                type="number"
+                type="text"
                 min={1}
                 name="tarif"
                 id="tarif"
@@ -610,7 +610,7 @@ export default function Home() {
                       />
                     </div>
                     <div className="flex justify-center items-center relative group">
-                      {item.htva}€
+                      {parseFloat(item.htva).toLocaleString('en-US', { minimumFractionDigits: 2 }).replaceAll(',', ' ')}€
                       {isLast && oglength < 3 && (
                         <div className="absolute hidden group-hover:block hover:scale-110 transition-all duration-300 -bottom-3 right-0 translate-x-1/2">
                           <button
