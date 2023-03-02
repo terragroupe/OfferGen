@@ -16,7 +16,7 @@ const ConsultantDropdown = (props) => {
         <>
           <div className="relative">
             <Listbox.Button className="relative w-full cursor-pointer rounded-md pl-3 text-left focus:outline-none sm:text-sm">
-              <div className="flex items-center space-x-2">
+              <div className="flex space-x-2">
                 <div className="">
                   <img
                     src={`https://offergen.vercel.app/img/consultant/${selectedConsultant?.image}`}

@@ -69,36 +69,36 @@ export default function Home() {
   // Call PDF.CO API and generate pdf
   const createPDF = async () => {
     const printContent = document.getElementById("print-content").innerHTML;
-    
+
     // Formating for PDF.CO With tailwind CSS
     // Tailwind Intellisense Bug ->
     const htmlContent = `
-  <html>
-  <head>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-      input[type="date"]::-webkit-calendar-picker-indicator {
-        display: none;
-      }
-    </style>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              "tgbrown-400": "#a6845b",
+      <html>
+      <head>
+        <style>
+          @import url("https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+          input[type="date"]::-webkit-calendar-picker-indicator {
+            display: none;
+          }
+        </style>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+          tailwind.config = {
+            theme: {
+              extend: {
+                colors: {
+                  "tgbrown-400": "#a6845b",
+                },
+              },
             },
-          },
-        },
-      };
-    </script>
-  </head>
-  <body>
-    ${printContent}
-  </body>
-</html>
-  `;
+          };
+        </script>
+      </head>
+      <body>
+        ${printContent}
+      </body>
+    </html>
+      `;
 
     const apiKey =
       "whrismyphn@gmail.com_adb9df41092f46dc6fe2ce3f130e7ae32a5eaf17d0ef805fbd024486bd6514ad3f0280de";
@@ -108,8 +108,8 @@ export default function Home() {
       endpoint,
       {
         html: htmlContent,
-        name: "document.pdf",
-        margins: "8px 8px 8px 8px",
+        name: "TerraGroupe - d'Offres-Gaz.pdf",
+        margins: "20px 8px 8px 8px",
         paperSize: "A4",
         orientation: "Portrait",
       },
@@ -121,9 +121,29 @@ export default function Home() {
       }
     );
     // console.log(response.data.url);
-    window.open(response.data.url, '_blank');
+
+    // OPEN theGenerated PDF in new TAB
+    window.open(response.data.url, "_blank");
+    DownloadPDF(response.data.url);
     addOfferGenAirtable(response.data.url);
   };
+
+  function DownloadPDF(url) {
+    fetch(url)
+      .then((response) => response.blob())
+      .then((blob) => {
+        // Create a new URL object from the blob
+        const url = URL.createObjectURL(blob);
+
+        // Create a new anchor element to download the file
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "TerraGroupe - d'Offres-Gaz.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+  }
 
   // Add Data to OfferGen Table - AIRTABLE
   const addNosOffresAirtable = async (offGenId) => {
@@ -302,8 +322,7 @@ export default function Home() {
           <Link href={`/`}>
             <img
               className="w-full px-4"
-              // src="https://offergen.vercel.app/_next/image?url=%2Fimg%2Ffirst-page-banner.webp&w=1920&q=75"
-              src="./img/gaz-banner.webp"
+              src="https://offergen.vercel.app/img/gaz-banner.webp"
               width={1300}
               height={200}
               alt="Banner"
@@ -670,7 +689,7 @@ export default function Home() {
           <button
             disabled={isLoading}
             onClick={handleSubmitButton}
-            className="bg-black w-36 mx-auto mb-10 md:w-48 h-14 md:h-16 rounded-b-lg hover:bg-tgbrown-600 hover:-translate-y-1 transition-all duration-300 text-white font-bold text-xl md:text-2xl flex justify-center items-center"
+            className="bg-tgbrown-400 w-36 mx-auto mb-10 md:w-52 h-14 md:h-16 rounded-3xl px-4 hover:bg-tgbrown-600 hover:-translate-y-1 transition-all duration-300 text-white font-bold text-xl md:text-2xl flex justify-center items-center"
           >
             {isLoading ? (
               <Dna
