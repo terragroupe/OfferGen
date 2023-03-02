@@ -69,6 +69,7 @@ export default function Home() {
   // Call PDF.CO API and generate pdf
   const createPDF = async () => {
     const printContent = document.getElementById("print-content").innerHTML;
+    
     // Formating for PDF.CO With tailwind CSS
     // Tailwind Intellisense Bug ->
     const htmlContent = `
@@ -120,11 +121,9 @@ export default function Home() {
       }
     );
     // console.log(response.data.url);
-    addOfferGenAirtable(response.data.url)
-   
+    window.open(response.data.url, '_blank');
+    addOfferGenAirtable(response.data.url);
   };
-
-
 
   // Add Data to OfferGen Table - AIRTABLE
   const addNosOffresAirtable = async (offGenId) => {
@@ -187,7 +186,7 @@ export default function Home() {
             Profil: formData.profil,
             CAR: formData.car.toString(),
             PlacedDate: formData.placedDate.toISOString().substring(0, 10),
-            PDF: [{url:pdfUrl}],
+            PDF: [{ url: pdfUrl }],
           },
         },
         {
@@ -290,7 +289,6 @@ export default function Home() {
     });
   };
 
-
   return (
     <div>
       <Head>
@@ -303,14 +301,15 @@ export default function Home() {
         <div id="print-content" className="max-w-7xl mx-auto">
           <Link href={`/`}>
             <img
-              className="w-full"
-              src="https://offergen.vercel.app/_next/image?url=%2Fimg%2Ffirst-page-banner.webp&w=1920&q=75"
+              className="w-full px-4"
+              // src="https://offergen.vercel.app/_next/image?url=%2Fimg%2Ffirst-page-banner.webp&w=1920&q=75"
+              src="./img/gaz-banner.webp"
               width={1300}
               height={200}
               alt="Banner"
             />
           </Link>
-          <div className="max-w-6xl mx-auto px-10 mt-8">
+          <div className="w-full px-4 mx-auto mt-8">
             {/* First Section - Comapany & Consultant Information */}
             <div className="flex justify-between">
               <div className="text-xs flex flex-col space-y-1">
@@ -671,7 +670,7 @@ export default function Home() {
           <button
             disabled={isLoading}
             onClick={handleSubmitButton}
-            className="bg-black w-36 mx-auto mb-10 md:w-48 h-14 md:h-20 rounded-b-lg hover:bg-tgbrown-600 hover:-translate-y-1 transition-all duration-300 text-white font-bold text-xl md:text-2xl flex justify-center items-center"
+            className="bg-black w-36 mx-auto mb-10 md:w-48 h-14 md:h-16 rounded-b-lg hover:bg-tgbrown-600 hover:-translate-y-1 transition-all duration-300 text-white font-bold text-xl md:text-2xl flex justify-center items-center"
           >
             {isLoading ? (
               <Dna
@@ -683,7 +682,14 @@ export default function Home() {
                 wrapperClass="dna-wrapper"
               />
             ) : (
-              " Générer PDF"
+              <div className="flex item-center">
+                <span>Générer PDF</span>
+                <img
+                  className="ml-2 my-auto w-7 h-6"
+                  src="./img/download.webp"
+                  alt=""
+                />
+              </div>
             )}
           </button>
         </div>

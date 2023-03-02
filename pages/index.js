@@ -14,9 +14,9 @@ export default function Home() {
       <main>
         <div className="max-w-7xl mx-auto">
           <Link href={`/`}><Image className="w-full" src="/img/first-page-banner.webp" width={1300} height={200} alt="Banner" /></Link>
-          <div className="max-w-lg mx-auto flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:justify-between md:items-center mt-12 md:mt-36">
-            <Link href="/gaz" className="bg-tgbrown-400 w-36 md:w-48 h-14 md:h-20 rounded-b-lg hover:bg-tgbrown-600 hover:-translate-y-1 transition-all duration-300 text-white font-bold text-xl md:text-2xl flex justify-center items-center">Gaz</Link>
-            <Link href="/" className="bg-tgbrown-400 w-36 md:w-48 h-14 md:h-20 rounded-b-lg hover:bg-tgbrown-600 hover:-translate-y-1 transition-all duration-300 text-white font-bold text-xl md:text-2xl flex justify-center items-center">Electricité</Link>
+          <div className="max-w-sm mx-auto flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:justify-between md:items-center mt-12 md:mt-36">
+            <Link href="/gaz" className="w-32 hover:scale-110 hover:-translate-y-1 transition-all duration-500"><img className="w-32" src="./img/gas.webp" alt="" /></Link>
+            <Link href="/" className="w-32 hover:scale-110 hover:-translate-y-1 transition-all duration-500"><img className="w-32" src="./img/electricity.webp" alt="" /></Link>
           </div>
         </div>
       </main>
