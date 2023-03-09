@@ -9,10 +9,10 @@ import { Fragment, useState } from "react";
 
 import Consultant from "../data/consultant.json";
 import Partner from "../data/partner.json";
+import { CreateHtmltoPDF, MakeDownloadFromURL } from "../utils/helper";
 
 import ConsultantDropdown from "../components/consultantDropdown";
 import PartnerDropdown from "../components/partnerDropdown";
-import { CreateHtmltoPDF, MakeDownloadFromURL } from "../utils/helper";
 
 export default function Home() {
   const [selectedConsultant, setSelectedConsultant] = useState(Consultant[3]);
@@ -76,7 +76,7 @@ export default function Home() {
     // OPEN theGenerated PDF in new TAB
     window.open(pdfUrl, "_blank");
     MakeDownloadFromURL(pdfUrl);
-    // addOfferGenAirtable(pdfUrl);
+    addOfferGenAirtable(pdfUrl);
   };
 
   // Add Data to OfferGen Table - AIRTABLE
@@ -149,7 +149,6 @@ export default function Home() {
         }
       )
       .then((res) => {
-        // console.log("res>>", res.data.id);
         addNosOffresAirtable(res.data.id);
       })
       .catch((err) => {
@@ -244,7 +243,7 @@ export default function Home() {
   return (
     <div>
       <Head>
-        <title>Générateur d&rsquo;Offres - Gaz</title>
+        <title>Générateur d&rsquo;Offres - Électricité</title>
         <meta name="description" content="Générateur d'Offres" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -254,7 +253,7 @@ export default function Home() {
           <Link href={`/`}>
             <img
               className="w-full px-4"
-              src="https://offergen.vercel.app/img/gaz-banner.webp"
+              src="./img/electricite-banner.webp"
               width={1300}
               height={200}
               alt="Banner"
