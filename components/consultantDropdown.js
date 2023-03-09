@@ -42,9 +42,9 @@ const ConsultantDropdown = (props) => {
               leaveTo="opacity-0"
             >
               <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                {Consultant.map((person) => (
+                {Consultant.map((person,index) => (
                   <Listbox.Option
-                    key={person.id}
+                    key={index}
                     className={({ active }) =>
                       classNames(
                         active ? "text-white bg-tgbrown-300" : "text-gray-900",

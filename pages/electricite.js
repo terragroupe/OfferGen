@@ -9,6 +9,7 @@ import { Fragment, useState } from "react";
 
 import Consultant from "../data/consultant.json";
 import Partner from "../data/partner.json";
+import SegmentList from "../data/segmentList.json";
 import { CreateHtmltoPDF, MakeDownloadFromURL } from "../utils/helper";
 
 import ConsultantDropdown from "../components/consultantDropdown";
@@ -16,6 +17,7 @@ import PartnerDropdown from "../components/partnerDropdown";
 
 export default function Home() {
   const [selectedConsultant, setSelectedConsultant] = useState(Consultant[3]);
+  const [selectedSegment, setSelectedSegment] = useState(SegmentList[0]);
   const [loadingAirtable, setLoadingAirtable] = useState(false);
   const [loadingPdf, setLoadingPdf] = useState(false);
   // const [pdfUrl, setPdfUrl] = useState(null)
@@ -32,11 +34,26 @@ export default function Home() {
     tarif: "",
     profil: "",
     car: 0,
+    carHp: 0,
+    carHc: 0,
+    carPte: 0,
+    carHph: 0,
+    carHch: 0,
+    carHpe: 0,
+    carHce: 0,
     startDate: new Date(),
     placedDate: new Date(),
     offers: [
       {
         molecule: 0,
+        hp: 0,
+        hc: 0,
+        pte: 0,
+        hph: 0,
+        hch: 0,
+        hpe: 0,
+        hce: 0,
+        moyem: 0,
         mois: 0,
         cta: 0,
         ticgn: 0,
@@ -91,7 +108,9 @@ export default function Home() {
                 ID: `OG${Date.now().toString().substring(4)}`,
                 OGID: [offGenId],
                 Fournisseurs: item.partnerName,
-                DebutDeFourniture: formData.startDate.toISOString().substring(0, 10),
+                DebutDeFourniture: formData.startDate
+                  .toISOString()
+                  .substring(0, 10),
                 FinDeFourniture: item.endDate.toISOString().substring(0, 10),
                 Type: item.type,
                 CAR: formData.car.toString(),
@@ -172,6 +191,7 @@ export default function Home() {
       return {
         ...offer,
         htva: parseFloat(offerHTVA).toFixed(2),
+        moyem: parseFloat(offerHTVA / upData.car).toFixed(2),
       };
     });
 
@@ -180,6 +200,18 @@ export default function Home() {
       offers: updatedOffers,
     }));
   };
+
+  // Check The Segment Value and Return number to indicate conditional render
+  const segmentDecision = (() => {
+    switch (selectedSegment) {
+      case "C5 HP/HC":
+        return 3;
+      case "C5 BASE":
+        return 2;
+      default:
+        return 1;
+    }
+  })();
 
   // Handle Date Input
   const handleDateInput = (e, index) => {
@@ -311,16 +343,28 @@ export default function Home() {
               <ConsultantDropdown consultantState={consultantState} />
             </div>
 
-            {/* Second Section */}
+            {/* Second Section - Header */}
             <div className="grid grid-cols-6 text-white bg-tgbrown-400 rounded-t-md mt-6">
-              <div className="text-center text-sm font-bold border-r py-1">Site</div>
-              <div className="text-center text-sm font-bold border-r py-1">PDL</div>
-              <div className="text-center text-sm font-bold border-r py-1">Segment</div>
-              <div className="text-center text-sm font-bold border-r py-1">Puissance (en Kva)</div>
-              <div className="text-center text-sm font-bold border-r py-1">CAR(MWH)</div>
+              <div className="text-center text-sm font-bold border-r py-1">
+                Site
+              </div>
+              <div className="text-center text-sm font-bold border-r py-1">
+                PDL
+              </div>
+              <div className="text-center text-sm font-bold border-r py-1">
+                Segment
+              </div>
+              <div className="text-center text-sm font-bold border-r py-1">
+                Puissance (en Kva)
+              </div>
+              <div className="text-center text-sm font-bold border-r py-1">
+                CAR(MWH)
+              </div>
               <div className="text-center text-sm font-bold py-1">TURPE</div>
             </div>
+            {/* Second Section - ROW */}
             <div className="grid grid-cols-6 border overflow-hidden border-tgbrown-400 rounded-b-md">
+              {/* Site */}
               <textarea
                 className="resize-none focus-within:resize-y text-center border-r border-tgbrown-400 py-3"
                 name="site"
@@ -331,6 +375,7 @@ export default function Home() {
                 value={formData.site}
                 onChange={handleInputChange}
               ></textarea>
+              {/* PDL */}
               <input
                 className="w-full py-3 text-center border-r border-tgbrown-400"
                 type="text"
@@ -340,15 +385,23 @@ export default function Home() {
                 value={formData.pdl}
                 onChange={handleInputChange}
               />
-              <input
-                className="w-full py-3 text-center border-r border-tgbrown-400"
-                type="text"
-                min={1}
-                name="tarif"
-                id="tarif"
-                value={formData.tarif}
-                onChange={handleInputChange}
-              />
+              {/* Segment */}
+              <select
+                id="segment"
+                name="segment"
+                value={selectedSegment}
+                onChange={(e) => setSelectedSegment(e.target.value)}
+                className="w-full appearance-none text-center border-r border-tgbrown-400"
+              >
+                {SegmentList.map((item, index) => {
+                  return (
+                    <option key={index} className="text-base" value={item}>
+                      {item}
+                    </option>
+                  );
+                })}
+              </select>
+              {/* Puissance (en Kva) */}
               <input
                 className="w-full py-3 text-center border-r border-tgbrown-400"
                 type="text"
@@ -358,6 +411,7 @@ export default function Home() {
                 value={formData.puissance}
                 onChange={handleInputChange}
               />
+              {/* CAR(MWH) */}
               <input
                 className="w-full py-3 text-center border-r border-tgbrown-400"
                 type="number"
@@ -367,6 +421,7 @@ export default function Home() {
                 value={formData.car}
                 onChange={handleInputChange}
               />
+              {/* TURPE */}
               <input
                 className="w-full py-3 text-center"
                 type="text"
@@ -377,8 +432,96 @@ export default function Home() {
               />
             </div>
 
+            {/* Consoitration Section - START */}
+            <div className="max-w-3xl mx-auto mt-8 rounded-md border border-tgbrown-400">
+              <div className="grid grid-cols-5">
+                <div className="text-center text-sm font-bold bg-tgbrown-400 border-r text-white py-1">
+                  PTE
+                </div>
+                <div className="text-center text-sm font-bold bg-tgbrown-400 border-r text-white py-1">
+                  HPH
+                </div>
+                <div className="text-center text-sm font-bold bg-tgbrown-400 border-r text-white py-1">
+                  HCH
+                </div>
+                <div className="text-center text-sm font-bold bg-tgbrown-400 border-r text-white py-1">
+                  HPE
+                </div>
+                <div className="text-center text-sm font-bold bg-tgbrown-400 text-white py-1">
+                  HCE
+                </div>
+              </div>
+              <div className="grid grid-cols-5">
+                <input
+                  className="w-full pt-2 pb-1 text-center border-r border-tgbrown-400"
+                  type="number"
+                  min={1}
+                  name="carPte"
+                  id="carPte"
+                  value={formData.carPte}
+                  onChange={handleInputChange}
+                />
+                <input
+                  className="w-full pt-2 pb-1 text-center border-r border-tgbrown-400"
+                  type="number"
+                  min={1}
+                  name="carHph"
+                  id="carHph"
+                  value={formData.carHph}
+                  onChange={handleInputChange}
+                />
+                <input
+                  className="w-full pt-2 pb-1 text-center border-r border-tgbrown-400"
+                  type="number"
+                  min={1}
+                  name="carHch"
+                  id="carHch"
+                  value={formData.carHch}
+                  onChange={handleInputChange}
+                />
+                <input
+                  className="w-full pt-2 pb-1 text-center border-r border-tgbrown-400"
+                  type="number"
+                  min={1}
+                  name="carHpe"
+                  id="carHpe"
+                  value={formData.carHpe}
+                  onChange={handleInputChange}
+                />
+                <input
+                  className="w-full pt-2 pb-1 text-center border-r"
+                  type="number"
+                  min={1}
+                  name="carHce"
+                  id="carHce"
+                  value={formData.carHce}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="grid grid-cols-5">
+                <div className="text-center text-tgbrown-500 text-sm pb-1 border-r border-tgbrown-400">
+                  {parseFloat((formData.carPte / formData.car) * 100).toFixed(2)}%
+                </div>
+                <div className="text-center text-tgbrown-500 text-sm pb-1 border-r border-tgbrown-400">
+                  {parseFloat((formData.carHph / formData.car) * 100).toFixed(2)}%
+                </div>
+                <div className="text-center text-tgbrown-500 text-sm pb-1 border-r border-tgbrown-400">
+                  {parseFloat((formData.carHch / formData.car) * 100).toFixed(2)}%
+                </div>
+                <div className="text-center text-tgbrown-500 text-sm pb-1 border-r border-tgbrown-400">
+                  {parseFloat((formData.carHpe / formData.car) * 100).toFixed(2)}%
+                </div>
+                <div className="text-center text-tgbrown-500 text-sm pb-1">
+                  {parseFloat((formData.carHce / formData.car) * 100).toFixed(2)}%
+                </div>
+              </div>
+            </div>
+            {/* Consoitration Section - END */}
+
             <div className="mt-6">
-              <h1 className="text-tgbrown-400 font-extrabold text-base">LES OFFRES RETENUES</h1>
+              <h1 className="text-tgbrown-400 font-extrabold text-base">
+                LES OFFRES RETENUES
+              </h1>
               <div className="text-tgbrown-400 font-semibold text-xs">
                 {/* {debutDate.toLocaleDateString('en-UK',{ day: '2-digit', month: '2-digit', year: 'numeric' })} */}
                 Début de fourniture au
@@ -396,35 +539,88 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid grid-cols-7 text-white bg-tgbrown-400 rounded-t-md mt-6">
-              <div className="text-center text-[11px] font-bold border-r py-1">Fournisseurs</div>
+            {/* NOS OFFRES Table Section */}
+            <div
+              className={`grid ${
+                segmentDecision !== 2 ? "grid-cols-8" : "grid-cols-7"
+              } text-white bg-tgbrown-400 rounded-t-md mt-6`}
+            >
+              <div className="text-center text-[11px] font-bold border-r py-1">
+                Fournisseurs
+              </div>
               <div className="grid grid-rows-2">
-                <div className="text-center text-[11px] font-bold border-r py-1">Engagement</div>
+                <div className="text-center text-[11px] font-bold border-r py-1">
+                  Engagement
+                </div>
                 <div className="text-center text-[11px] font-semibold border-t border-r py-1">
                   Fin de Fourniture
                 </div>
               </div>
-              <div className="text-center text-[11px] font-bold border-r py-1">Type d’Offre</div>
               <div className="text-center text-[11px] font-bold border-r py-1">
-                Prix Molécule MWh
+                Type d’Offre
               </div>
+              <div
+                className={`grid col-span-2 ${
+                  segmentDecision === 2 ? " grid-rows-1" : " grid-rows-2"
+                }`}
+              >
+                <div className="text-center text-[11px] font-bold border-r py-1">
+                  Prix Molécule MWh
+                </div>
+                {segmentDecision !== 2 && (
+                  <div
+                    className={`grid ${
+                      segmentDecision === 1 ? "grid-cols-5" : "grid-cols-2"
+                    }`}
+                  >
+                    {segmentDecision === 3 && (
+                      <>
+                        <div className="text-center text-[11px] font-semibold border-t border-r py-1">
+                          HP
+                        </div>
+                        <div className="text-center text-[11px] font-semibold border-t border-r py-1">
+                          HC
+                        </div>
+                      </>
+                    )}
+                    {segmentDecision === 1 && (
+                      <>
+                        <div className="text-center text-[11px] font-semibold border-t border-r py-1">
+                          PTE
+                        </div>
+                        <div className="text-center text-[11px] font-semibold border-t border-r py-1">
+                          HPH
+                        </div>
+                        <div className="text-center text-[11px] font-semibold border-t border-r py-1">
+                          HCH
+                        </div>
+                        <div className="text-center text-[11px] font-semibold border-t border-r py-1">
+                          HPE
+                        </div>
+                        <div className="text-center text-[11px] font-semibold border-t border-r py-1">
+                          HCE
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+              {segmentDecision !== 2 && (
+                <div className="text-center text-[11px] font-bold border-r py-1">
+                  Coût <br />
+                  moyen pondéré
+                </div>
+              )}
+
               <div className="text-center text-[11px] font-bold border-r py-1">
                 Abonnement/
                 <br />
                 Mois
               </div>
-              <div className="grid grid-rows-2">
-                <div className="text-center text-[11px] font-bold border-r py-1">Taxes</div>
-                <div className="grid grid-cols-2">
-                  <div className="text-center text-[11px] font-semibold border-t border-r py-1">
-                    CTA/An
-                  </div>
-                  <div className="text-center text-[11px] font-semibold border-t border-r py-1">
-                    TICGN
-                  </div>
-                </div>
+
+              <div className="text-center text-[11px] font-bold py-1">
+                Budget HTVA
               </div>
-              <div className="text-center text-[11px] font-bold py-1">Total HTVA</div>
             </div>
             <div className="text-center text-tgbrown-400 text-xl font-extrabold border-l border-r border-tgbrown-400 py-3">
               NOS OFFRES
@@ -434,139 +630,232 @@ export default function Home() {
               const isLast = formData.offers.length - 1 === index;
               const oglength = formData.offers.length;
               return (
-                <>
-                  <div
-                    className={`grid grid-cols-7 border text-[11px] font-semibold border-r-tgbrown-400 border-l-tgbrown-400 border-t-tgbrown-400 ${
-                      isLast && "rounded-b-md border-b-tgbrown-400"
-                    }`}
-                  >
-                    <div className="text-center border-r border-tgbrown-400">
-                      <PartnerDropdown partnerState={partnerState} index={index} item={item} />
-                    </div>
-                    <div className="flex items-center justify-center text-center border-r border-tgbrown-400">
-                      <div className="text-center">
-                        Fin au
-                        <input
-                          type="date"
-                          className="text-center"
-                          value={item.endDate.toISOString().substring(0, 10)}
-                          onChange={(e) => handleDateInput(e, index)}
-                        />
-                        <br />
-                        {(item.endDate.getFullYear() - formData.startDate.getFullYear()) * 12 +
-                          (item.endDate.getMonth() - formData.startDate.getMonth()) +
-                          1}{" "}
-                        mois
-                      </div>
-                    </div>
-                    <select
-                      id="countries"
-                      name="type"
-                      defaultValue={"fix"}
-                      onChange={(e) => handleOfferInput(e, index)}
-                      className="w-full appearance-none text-center border-r border-tgbrown-400"
-                    >
-                      <option className="text-base" selected={item.type === "fix"} value="fix">
-                        Prix Fixe
-                      </option>
-                      <option className="text-base" selected={item.type === "var"} value="var">
-                        Prix Variable
-                      </option>
-                    </select>
-
-                    <input
-                      className="w-full text-center border-r border-tgbrown-400"
-                      type="number"
-                      min={1}
-                      name="molecule"
-                      id="molecule"
-                      value={item.molecule}
-                      onChange={(e) => handleOfferInput(e, index)}
+                <div
+                  key={index}
+                  className={`grid ${
+                    segmentDecision !== 2 ? "grid-cols-8" : "grid-cols-7"
+                  } border text-[11px] font-semibold border-r-tgbrown-400 border-l-tgbrown-400 border-t-tgbrown-400 ${
+                    isLast && "rounded-b-md border-b-tgbrown-400"
+                  }`}
+                >
+                  {/* Partner/ Fournisseurs List */}
+                  <div className="text-center border-r border-tgbrown-400">
+                    <PartnerDropdown
+                      partnerState={partnerState}
+                      index={index}
+                      item={item}
                     />
-                    <input
-                      className="w-full text-center border-r border-tgbrown-400"
-                      type="number"
-                      min={1}
-                      name="mois"
-                      id="mois"
-                      value={item.mois}
-                      onChange={(e) => handleOfferInput(e, index)}
-                    />
-
-                    <div className="grid grid-cols-2">
+                  </div>
+                  {/* Engagement/ Fin de Fourniture */}
+                  <div className="flex items-center justify-center text-center border-r border-tgbrown-400">
+                    <div className="text-center">
+                      Fin au
                       <input
-                        className="w-full text-center border-r border-tgbrown-400"
-                        type="number"
-                        min={1}
-                        name="cta"
-                        id="cta"
-                        value={item.cta}
-                        onChange={(e) => handleOfferInput(e, index)}
+                        type="date"
+                        className="text-center"
+                        value={item.endDate.toISOString().substring(0, 10)}
+                        onChange={(e) => handleDateInput(e, index)}
                       />
-                      <input
-                        className="w-full text-center border-r border-tgbrown-400"
-                        type="number"
-                        min={1}
-                        name="ticgn"
-                        id="ticgn"
-                        value={item.ticgn}
-                        onChange={(e) => handleOfferInput(e, index)}
-                      />
-                    </div>
-                    <div className="flex justify-center items-center relative group">
-                      {parseFloat(item.htva)
-                        .toLocaleString("en-US", { minimumFractionDigits: 2 })
-                        .replaceAll(",", " ")}
-                      €
-                      {isLast && oglength < 3 && (
-                        <div className="absolute hidden group-hover:block hover:scale-110 transition-all duration-300 -bottom-3 right-0 translate-x-1/2">
-                          <button
-                            className="bg-tgbrown-400 text-white rounded-full w-5 h-5"
-                            onClick={() => {
-                              setFormData((prevState) => ({
-                                ...prevState,
-                                offers: [
-                                  ...prevState.offers,
-                                  {
-                                    molecule: 0,
-                                    mois: 0,
-                                    cta: 0,
-                                    ticgn: 0,
-                                    htva: 0,
-                                    type: "fix",
-                                    partnerName: "Alpiq",
-                                    endDate: new Date(),
-                                  },
-                                ],
-                              }));
-                            }}
-                          >
-                            +
-                          </button>
-                        </div>
-                      )}
-                      {oglength > 1 && (
-                        <div className="absolute hidden group-hover:block hover:scale-110 transition-all duration-300 top-1/2 -right-1 -translate-y-1/2 translate-x-1/2">
-                          <button
-                            className="bg-red-600 text-white rounded-full w-5 h-5"
-                            onClick={() => {
-                              setFormData((prevState) => {
-                                const updatedOffers = [...prevState.offers];
-                                updatedOffers.splice(index, 1);
-                                return {
-                                  ...prevState,
-                                  offers: updatedOffers,
-                                };
-                              });
-                            }}
-                          >
-                            X
-                          </button>
-                        </div>
-                      )}
+                      <br />
+                      {(item.endDate.getFullYear() -
+                        formData.startDate.getFullYear()) *
+                        12 +
+                        (item.endDate.getMonth() -
+                          formData.startDate.getMonth()) +
+                        1}{" "}
+                      mois
                     </div>
                   </div>
-                </>
+                  {/* Offer Type */}
+                  <select
+                    id="type"
+                    name="type"
+                    defaultValue={"fix"}
+                    onChange={(e) => handleOfferInput(e, index)}
+                    className="w-full appearance-none text-center border-r border-tgbrown-400"
+                  >
+                    <option className="text-base" value="fix">
+                      Prix Fixe
+                    </option>
+                    <option className="text-base" value="var">
+                      Prix Variable
+                    </option>
+                  </select>
+
+                  {/* Prix Molecule */}
+                  {segmentDecision === 2 ? (
+                    <>
+                      <div className="grid col-span-2">
+                        <input
+                          className="w-full text-center border-r border-tgbrown-400"
+                          type="number"
+                          min={1}
+                          name="molecule"
+                          id="molecule"
+                          value={item.molecule}
+                          onChange={(e) => handleOfferInput(e, index)}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <div
+                      className={`grid col-span-2 ${
+                        segmentDecision === 1 ? "grid-cols-5" : "grid-cols-2"
+                      }`}
+                    >
+                      {segmentDecision === 3 && (
+                        <>
+                          <input
+                            className="w-full text-center border-r border-tgbrown-400"
+                            type="number"
+                            min={1}
+                            name="hp"
+                            id="hp"
+                            value={item.hp}
+                            onChange={(e) => handleOfferInput(e, index)}
+                          />
+                          <input
+                            className="w-full text-center border-r border-tgbrown-400"
+                            type="number"
+                            min={1}
+                            name="hc"
+                            id="hc"
+                            value={item.hc}
+                            onChange={(e) => handleOfferInput(e, index)}
+                          />
+                        </>
+                      )}
+                      {segmentDecision === 1 && (
+                        <>
+                          <input
+                            className="w-full text-center border-r border-tgbrown-400"
+                            type="number"
+                            min={1}
+                            name="pte"
+                            id="pte"
+                            value={item.pte}
+                            onChange={(e) => handleOfferInput(e, index)}
+                          />
+                          <input
+                            className="w-full text-center border-r border-tgbrown-400"
+                            type="number"
+                            min={1}
+                            name="hph"
+                            id="hph"
+                            value={item.hph}
+                            onChange={(e) => handleOfferInput(e, index)}
+                          />
+                          <input
+                            className="w-full text-center border-r border-tgbrown-400"
+                            type="number"
+                            min={1}
+                            name="hch"
+                            id="hch"
+                            value={item.hch}
+                            onChange={(e) => handleOfferInput(e, index)}
+                          />
+                          <input
+                            className="w-full text-center border-r border-tgbrown-400"
+                            type="number"
+                            min={1}
+                            name="hpe"
+                            id="hpe"
+                            value={item.hpe}
+                            onChange={(e) => handleOfferInput(e, index)}
+                          />
+                          <input
+                            className="w-full text-center border-r border-tgbrown-400"
+                            type="number"
+                            min={1}
+                            name="hce"
+                            id="hce"
+                            value={item.hce}
+                            onChange={(e) => handleOfferInput(e, index)}
+                          />
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {segmentDecision !== 2 && (
+                    // Moyem/ Average
+                    <div className="flex items-center justify-center border-r border-tgbrown-400">
+                      {item.moyem}
+                    </div>
+                  )}
+
+                  <input
+                    className="w-full text-center border-r border-tgbrown-400"
+                    type="number"
+                    min={1}
+                    name="mois"
+                    id="mois"
+                    value={item.mois}
+                    onChange={(e) => handleOfferInput(e, index)}
+                  />
+
+                  {/* Total HTVA */}
+                  <div className="flex justify-center items-center relative group">
+                    {parseFloat(item.htva)
+                      .toLocaleString("en-US", { minimumFractionDigits: 2 })
+                      .replaceAll(",", " ")}
+                    €
+                    {isLast && oglength < 3 && (
+                      <div className="absolute hidden group-hover:block hover:scale-110 transition-all duration-300 -bottom-3 right-0 translate-x-1/2">
+                        <button
+                          className="bg-tgbrown-400 text-white rounded-full w-5 h-5"
+                          onClick={() => {
+                            setFormData((prevState) => ({
+                              ...prevState,
+                              offers: [
+                                ...prevState.offers,
+                                {
+                                  molecule: 0,
+                                  hp: 0,
+                                  hc: 0,
+                                  pte: 0,
+                                  hph: 0,
+                                  hch: 0,
+                                  hpe: 0,
+                                  hce: 0,
+                                  moyem: 0,
+                                  mois: 0,
+                                  cta: 0,
+                                  ticgn: 0,
+                                  htva: 0,
+                                  type: "fix",
+                                  partnerName: "Alpiq",
+                                  endDate: new Date(),
+                                },
+                              ],
+                            }));
+                          }}
+                        >
+                          +
+                        </button>
+                      </div>
+                    )}
+                    {oglength > 1 && (
+                      <div className="absolute hidden group-hover:block hover:scale-110 transition-all duration-300 top-1/2 -right-1 -translate-y-1/2 translate-x-1/2">
+                        <button
+                          className="bg-red-600 text-white rounded-full w-5 h-5"
+                          onClick={() => {
+                            setFormData((prevState) => {
+                              const updatedOffers = [...prevState.offers];
+                              updatedOffers.splice(index, 1);
+                              return {
+                                ...prevState,
+                                offers: updatedOffers,
+                              };
+                            });
+                          }}
+                        >
+                          X
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               );
             })}
 
@@ -610,7 +899,11 @@ export default function Home() {
             ) : (
               <div className="flex item-center">
                 <span>Générer PDF</span>
-                <img className="ml-2 my-auto w-7 h-6" src="./img/download.webp" alt="" />
+                <img
+                  className="ml-2 my-auto w-7 h-6"
+                  src="./img/download.webp"
+                  alt=""
+                />
               </div>
             )}
           </button>

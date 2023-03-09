@@ -36,3 +36,14 @@ input[type="date"]:focus-within::-webkit-calendar-picker-indicator {
     margin: 0;
     padding: 0;
 }
+
+/* Hide default Number Increment/Decrement */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+input[type=number] { 
+  -moz-appearance: textfield; /* Firefox */
+}

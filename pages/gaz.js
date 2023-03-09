@@ -333,9 +333,8 @@ export default function Home() {
               ></textarea>
               <input
                 className="w-full py-3 text-center border-r border-tgbrown-400"
-                type="number"
+                type="text"
                 maxLength={8}
-                min={1}
                 name="pce"
                 id="pce"
                 value={formData.pce}
