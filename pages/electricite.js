@@ -22,6 +22,7 @@ export default function Home() {
   const [loadingPdf, setLoadingPdf] = useState(false);
   // const [pdfUrl, setPdfUrl] = useState(null)
   // const [airtabelOgId, setAirtabelOgId] = useState(null)
+  const [showPTE, setShowPTE] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -211,6 +212,18 @@ export default function Home() {
       default:
         return 1;
     }
+  })();
+
+  // Check The PTE Value and Return if PTE will render
+  const pteDecision = (() => {
+    if (
+      selectedSegment === "C1" ||
+      selectedSegment === "C2" ||
+      selectedSegment === "C3" ||
+      selectedSegment === "C4 BT+"
+    )
+      return true;
+    return false;
   })();
 
   // Handle Date Input
@@ -433,92 +446,204 @@ export default function Home() {
             </div>
 
             {/* Consoitration Section - START */}
-            <div className="max-w-3xl mx-auto mt-8 rounded-md border border-tgbrown-400">
-              <div className="grid grid-cols-5">
-                <div className="text-center text-sm font-bold bg-tgbrown-400 border-r text-white py-1">
-                  PTE
-                </div>
-                <div className="text-center text-sm font-bold bg-tgbrown-400 border-r text-white py-1">
-                  HPH
-                </div>
-                <div className="text-center text-sm font-bold bg-tgbrown-400 border-r text-white py-1">
-                  HCH
-                </div>
-                <div className="text-center text-sm font-bold bg-tgbrown-400 border-r text-white py-1">
-                  HPE
-                </div>
-                <div className="text-center text-sm font-bold bg-tgbrown-400 text-white py-1">
-                  HCE
-                </div>
+            {segmentDecision !== 2 && (
+              <div className="mt-8">
+                <h1 className="text-center mb-2 text-lg font-semibold">
+                  Consommation
+                </h1>
+                {segmentDecision === 1 && (
+                  <div className="max-w-3xl mx-auto rounded-md border border-tgbrown-400">
+                    <div
+                      className={`grid ${
+                        pteDecision && showPTE ? "grid-cols-5" : "grid-cols-4"
+                      }`}
+                    >
+                      {pteDecision && showPTE && (
+                        <div className="text-center text-sm font-bold bg-tgbrown-400 border-r text-white py-1 relative group">
+                          PTE
+                          {showPTE && (
+                            <div className="absolute hidden group-hover:block hover:scale-110 transition-all duration-300 -top-3 left-0 -translate-x-1/2">
+                              <button
+                                className="bg-red-700 text-white rounded-full w-8 h-8"
+                                onClick={() => {
+                                  setShowPTE(false);
+                                }}
+                              >
+                                x
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      <div className="text-center text-sm font-bold bg-tgbrown-400 border-r text-white py-1 relative group">
+                        HPH
+                        {!showPTE && (
+                          <div className="absolute hidden group-hover:block hover:scale-110 transition-all duration-300 -bottom-3 left-0 -translate-x-1/2">
+                            <button
+                              className="bg-tgbrown-500 text-white rounded-full w-8 h-8"
+                              onClick={() => {
+                                setShowPTE(true);
+                              }}
+                            >
+                              +
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-center text-sm font-bold bg-tgbrown-400 border-r text-white py-1">
+                        HCH
+                      </div>
+                      <div className="text-center text-sm font-bold bg-tgbrown-400 border-r text-white py-1">
+                        HPE
+                      </div>
+                      <div className="text-center text-sm font-bold bg-tgbrown-400 text-white py-1">
+                        HCE
+                      </div>
+                    </div>
+                    <div
+                      className={`grid ${
+                        pteDecision && showPTE ? "grid-cols-5" : "grid-cols-4"
+                      }`}
+                    >
+                      {pteDecision && showPTE && (
+                        <input
+                          className="w-full pt-2 pb-1 text-center border-r border-tgbrown-400"
+                          type="number"
+                          min={1}
+                          name="carPte"
+                          id="carPte"
+                          value={formData.carPte}
+                          onChange={handleInputChange}
+                        />
+                      )}
+                      <input
+                        className="w-full pt-2 pb-1 text-center border-r border-tgbrown-400"
+                        type="number"
+                        min={1}
+                        name="carHph"
+                        id="carHph"
+                        value={formData.carHph}
+                        onChange={handleInputChange}
+                      />
+                      <input
+                        className="w-full pt-2 pb-1 text-center border-r border-tgbrown-400"
+                        type="number"
+                        min={1}
+                        name="carHch"
+                        id="carHch"
+                        value={formData.carHch}
+                        onChange={handleInputChange}
+                      />
+                      <input
+                        className="w-full pt-2 pb-1 text-center border-r border-tgbrown-400"
+                        type="number"
+                        min={1}
+                        name="carHpe"
+                        id="carHpe"
+                        value={formData.carHpe}
+                        onChange={handleInputChange}
+                      />
+                      <input
+                        className="w-full pt-2 pb-1 text-center border-r"
+                        type="number"
+                        min={1}
+                        name="carHce"
+                        id="carHce"
+                        value={formData.carHce}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div
+                      className={`grid ${
+                        pteDecision && showPTE ? "grid-cols-5" : "grid-cols-4"
+                      }`}
+                    >
+                      {pteDecision && showPTE && (
+                        <div className="text-center text-tgbrown-500 text-sm pb-1 border-r border-tgbrown-400">
+                          {parseFloat(
+                            (formData.carPte / formData.car) * 100
+                          ).toFixed(2)}
+                          %
+                        </div>
+                      )}
+                      <div className="text-center text-tgbrown-500 text-sm pb-1 border-r border-tgbrown-400">
+                        {parseFloat(
+                          (formData.carHph / formData.car) * 100
+                        ).toFixed(2)}
+                        %
+                      </div>
+                      <div className="text-center text-tgbrown-500 text-sm pb-1 border-r border-tgbrown-400">
+                        {parseFloat(
+                          (formData.carHch / formData.car) * 100
+                        ).toFixed(2)}
+                        %
+                      </div>
+                      <div className="text-center text-tgbrown-500 text-sm pb-1 border-r border-tgbrown-400">
+                        {parseFloat(
+                          (formData.carHpe / formData.car) * 100
+                        ).toFixed(2)}
+                        %
+                      </div>
+                      <div className="text-center text-tgbrown-500 text-sm pb-1">
+                        {parseFloat(
+                          (formData.carHce / formData.car) * 100
+                        ).toFixed(2)}
+                        %
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {segmentDecision === 3 && (
+                  <div className="max-w-md mx-auto rounded-md border border-tgbrown-400">
+                    <div className="grid grid-cols-2">
+                      <div className="text-center text-sm font-bold bg-tgbrown-400 border-r text-white py-1">
+                        HP
+                      </div>
+                      <div className="text-center text-sm font-bold bg-tgbrown-400 text-white py-1">
+                        HC
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2">
+                      <input
+                        className="w-full pt-2 pb-1 text-center border-r border-tgbrown-400"
+                        type="number"
+                        min={1}
+                        name="carHp"
+                        id="carHp"
+                        value={formData.carHp}
+                        onChange={handleInputChange}
+                      />
+                      <input
+                        className="w-full pt-2 pb-1 text-center border-r"
+                        type="number"
+                        min={1}
+                        name="carHc"
+                        id="carHc"
+                        value={formData.carHc}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2">
+                      <div className="text-center text-tgbrown-500 text-sm pb-1 border-r border-tgbrown-400">
+                        {parseFloat(
+                          (formData.carHp / formData.car) * 100
+                        ).toFixed(2)}
+                        %
+                      </div>
+                      <div className="text-center text-tgbrown-500 text-sm pb-1">
+                        {parseFloat(
+                          (formData.carHc / formData.car) * 100
+                        ).toFixed(2)}
+                        %
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="grid grid-cols-5">
-                <input
-                  className="w-full pt-2 pb-1 text-center border-r border-tgbrown-400"
-                  type="number"
-                  min={1}
-                  name="carPte"
-                  id="carPte"
-                  value={formData.carPte}
-                  onChange={handleInputChange}
-                />
-                <input
-                  className="w-full pt-2 pb-1 text-center border-r border-tgbrown-400"
-                  type="number"
-                  min={1}
-                  name="carHph"
-                  id="carHph"
-                  value={formData.carHph}
-                  onChange={handleInputChange}
-                />
-                <input
-                  className="w-full pt-2 pb-1 text-center border-r border-tgbrown-400"
-                  type="number"
-                  min={1}
-                  name="carHch"
-                  id="carHch"
-                  value={formData.carHch}
-                  onChange={handleInputChange}
-                />
-                <input
-                  className="w-full pt-2 pb-1 text-center border-r border-tgbrown-400"
-                  type="number"
-                  min={1}
-                  name="carHpe"
-                  id="carHpe"
-                  value={formData.carHpe}
-                  onChange={handleInputChange}
-                />
-                <input
-                  className="w-full pt-2 pb-1 text-center border-r"
-                  type="number"
-                  min={1}
-                  name="carHce"
-                  id="carHce"
-                  value={formData.carHce}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="grid grid-cols-5">
-                <div className="text-center text-tgbrown-500 text-sm pb-1 border-r border-tgbrown-400">
-                  {parseFloat((formData.carPte / formData.car) * 100).toFixed(2)}%
-                </div>
-                <div className="text-center text-tgbrown-500 text-sm pb-1 border-r border-tgbrown-400">
-                  {parseFloat((formData.carHph / formData.car) * 100).toFixed(2)}%
-                </div>
-                <div className="text-center text-tgbrown-500 text-sm pb-1 border-r border-tgbrown-400">
-                  {parseFloat((formData.carHch / formData.car) * 100).toFixed(2)}%
-                </div>
-                <div className="text-center text-tgbrown-500 text-sm pb-1 border-r border-tgbrown-400">
-                  {parseFloat((formData.carHpe / formData.car) * 100).toFixed(2)}%
-                </div>
-                <div className="text-center text-tgbrown-500 text-sm pb-1">
-                  {parseFloat((formData.carHce / formData.car) * 100).toFixed(2)}%
-                </div>
-              </div>
-            </div>
+            )}
             {/* Consoitration Section - END */}
 
-            <div className="mt-6">
+            <div className="mt-8">
               <h1 className="text-tgbrown-400 font-extrabold text-base">
                 LES OFFRES RETENUES
               </h1>
@@ -570,7 +695,11 @@ export default function Home() {
                 {segmentDecision !== 2 && (
                   <div
                     className={`grid ${
-                      segmentDecision === 1 ? "grid-cols-5" : "grid-cols-2"
+                      segmentDecision === 3
+                        ? "grid-cols-2"
+                        : showPTE && pteDecision
+                        ? "grid-cols-5"
+                        : "grid-cols-4"
                     }`}
                   >
                     {segmentDecision === 3 && (
@@ -585,9 +714,11 @@ export default function Home() {
                     )}
                     {segmentDecision === 1 && (
                       <>
-                        <div className="text-center text-[11px] font-semibold border-t border-r py-1">
-                          PTE
-                        </div>
+                        {showPTE && pteDecision && (
+                          <div className="text-center text-[11px] font-semibold border-t border-r py-1">
+                            PTE
+                          </div>
+                        )}
                         <div className="text-center text-[11px] font-semibold border-t border-r py-1">
                           HPH
                         </div>
@@ -700,7 +831,11 @@ export default function Home() {
                   ) : (
                     <div
                       className={`grid col-span-2 ${
-                        segmentDecision === 1 ? "grid-cols-5" : "grid-cols-2"
+                        segmentDecision === 3
+                          ? "grid-cols-2"
+                          : showPTE && pteDecision
+                          ? "grid-cols-5"
+                          : "grid-cols-4"
                       }`}
                     >
                       {segmentDecision === 3 && (
@@ -727,15 +862,17 @@ export default function Home() {
                       )}
                       {segmentDecision === 1 && (
                         <>
-                          <input
-                            className="w-full text-center border-r border-tgbrown-400"
-                            type="number"
-                            min={1}
-                            name="pte"
-                            id="pte"
-                            value={item.pte}
-                            onChange={(e) => handleOfferInput(e, index)}
-                          />
+                          {showPTE && pteDecision && (
+                            <input
+                              className="w-full text-center border-r border-tgbrown-400"
+                              type="number"
+                              min={1}
+                              name="pte"
+                              id="pte"
+                              value={item.pte}
+                              onChange={(e) => handleOfferInput(e, index)}
+                            />
+                          )}
                           <input
                             className="w-full text-center border-r border-tgbrown-400"
                             type="number"
@@ -862,15 +999,37 @@ export default function Home() {
             {/* Footer Portion */}
             <div className="flex justify-between mt-8">
               <div className="text-xs font-bold">
-                Date:{" "}
+                Date de validité:{" "}
                 <input
-                  type="date"
+                  type="datetime-local"
                   className="ml-1"
-                  value={formData.placedDate.toISOString().substring(0, 10)}
+                  value={
+                    formData.placedDate
+                      ? `${formData.placedDate
+                          .getFullYear()
+                          .toString()
+                          .padStart(4, "0")}-${(
+                          formData.placedDate.getMonth() + 1
+                        )
+                          .toString()
+                          .padStart(2, "0")}-${formData.placedDate
+                          .getDate()
+                          .toString()
+                          .padStart(2, "0")}T${formData.placedDate
+                          .getHours()
+                          .toString()
+                          .padStart(2, "0")}:${formData.placedDate
+                          .getMinutes()
+                          .toString()
+                          .padStart(2, "0")}`
+                      : ""
+                  }
                   onChange={(e) =>
                     setFormData((old) => ({
                       ...old,
-                      placedDate: new Date(e.target.value),
+                      placedDate: e.target.value
+                        ? new Date(e.target.value)
+                        : null,
                     }))
                   }
                   name=""
