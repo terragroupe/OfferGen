@@ -26,7 +26,7 @@ const ConsultantDropdown = (props) => {
                   />
                 </div>
                 <div className="flex flex-col space-y-1 text-xs">
-                  <div className="font-semibold">Votre Consultant </div>
+                  <div className="font-semibold">Votre Consultant{selectedConsultant.email==="sofia.rhetas@terra-groupe.fr" && "e"}</div>
                   <div>{selectedConsultant.name}</div>
                   <div>{selectedConsultant.email}</div>
                   <div>{selectedConsultant.cid}</div>

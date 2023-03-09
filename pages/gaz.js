@@ -76,7 +76,7 @@ export default function Home() {
     // OPEN theGenerated PDF in new TAB
     window.open(pdfUrl, "_blank");
     MakeDownloadFromURL(pdfUrl);
-    // addOfferGenAirtable(pdfUrl);
+    addOfferGenAirtable(pdfUrl);
   };
 
   // Add Data to OfferGen Table - AIRTABLE
@@ -266,7 +266,7 @@ export default function Home() {
               <div className="text-xs flex flex-col space-y-1">
                 <div className="flex space-x-1 group">
                   <label htmlFor="companyName" className="font-semibold">
-                    Votre Enterprise:
+                    Votre Enterprise
                   </label>
                 </div>
                 <div className="flex space-x-2 group">

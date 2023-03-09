@@ -76,7 +76,7 @@ export default function Home() {
     // OPEN theGenerated PDF in new TAB
     window.open(pdfUrl, "_blank");
     MakeDownloadFromURL(pdfUrl);
-    addOfferGenAirtable(pdfUrl);
+    // addOfferGenAirtable(pdfUrl);
   };
 
   // Add Data to OfferGen Table - AIRTABLE
@@ -265,7 +265,7 @@ export default function Home() {
               <div className="text-xs flex flex-col space-y-1">
                 <div className="flex space-x-1 group">
                   <label htmlFor="companyName" className="font-semibold">
-                    Votre Enterprise:
+                    Votre Enterprise
                   </label>
                 </div>
                 <div className="flex space-x-2 group">
@@ -312,14 +312,15 @@ export default function Home() {
             </div>
 
             {/* Second Section */}
-            <div className="grid grid-cols-5 text-white bg-tgbrown-400 rounded-t-md mt-6">
+            <div className="grid grid-cols-6 text-white bg-tgbrown-400 rounded-t-md mt-6">
               <div className="text-center text-sm font-bold border-r py-1">Site</div>
-              <div className="text-center text-sm font-bold border-r py-1">PCE</div>
-              <div className="text-center text-sm font-bold border-r py-1">Tarif</div>
-              <div className="text-center text-sm font-bold border-r py-1">Profil</div>
-              <div className="text-center text-sm font-bold py-1">CAR(MWH)</div>
+              <div className="text-center text-sm font-bold border-r py-1">PDL</div>
+              <div className="text-center text-sm font-bold border-r py-1">Segment</div>
+              <div className="text-center text-sm font-bold border-r py-1">Puissance (en Kva)</div>
+              <div className="text-center text-sm font-bold border-r py-1">CAR(MWH)</div>
+              <div className="text-center text-sm font-bold py-1">TURPE</div>
             </div>
-            <div className="grid grid-cols-5 border overflow-hidden border-tgbrown-400 rounded-b-md">
+            <div className="grid grid-cols-6 border overflow-hidden border-tgbrown-400 rounded-b-md">
               <textarea
                 className="resize-none focus-within:resize-y text-center border-r border-tgbrown-400 py-3"
                 name="site"
@@ -332,12 +333,11 @@ export default function Home() {
               ></textarea>
               <input
                 className="w-full py-3 text-center border-r border-tgbrown-400"
-                type="number"
+                type="text"
                 maxLength={8}
-                min={1}
-                name="pce"
-                id="pce"
-                value={formData.pce}
+                name="pdl"
+                id="pdl"
+                value={formData.pdl}
                 onChange={handleInputChange}
               />
               <input
@@ -353,18 +353,26 @@ export default function Home() {
                 className="w-full py-3 text-center border-r border-tgbrown-400"
                 type="text"
                 maxLength={20}
-                name="profil"
-                id="profil"
-                value={formData.profil}
+                name="puissance"
+                id="puissance"
+                value={formData.puissance}
                 onChange={handleInputChange}
               />
               <input
-                className="w-full py-3 text-center"
+                className="w-full py-3 text-center border-r border-tgbrown-400"
                 type="number"
                 min={1}
                 name="car"
                 id="car"
                 value={formData.car}
+                onChange={handleInputChange}
+              />
+              <input
+                className="w-full py-3 text-center"
+                type="text"
+                name="turpe"
+                id="turpe"
+                value={formData.turpe}
                 onChange={handleInputChange}
               />
             </div>
