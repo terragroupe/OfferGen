@@ -83,7 +83,7 @@ export default function Home() {
   const addNosOffresAirtable = async (offGenId) => {
     await axios
       .post(
-        "https://api.airtable.com/v0/app9O3VyWFlvjeBfX/NosOffres",
+        "https://api.airtable.com/v0/app9O3VyWFlvjeBfX/NosOffresGaz",
         {
           records: formData.offers.map((item) => {
             return {
@@ -124,7 +124,7 @@ export default function Home() {
   const addOfferGenAirtable = async (pdfUrl) => {
     await axios
       .post(
-        "https://api.airtable.com/v0/app9O3VyWFlvjeBfX/OfferGen",
+        "https://api.airtable.com/v0/app9O3VyWFlvjeBfX/OfferGenGaz",
         {
           fields: {
             ID: `TG${Date.now().toString().substring(4)}`,

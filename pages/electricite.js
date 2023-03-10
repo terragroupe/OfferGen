@@ -32,9 +32,10 @@ export default function Home() {
     contactPerson: "",
     consultantName: selectedConsultant.name,
     site: "",
-    pce: "",
-    tarif: "",
-    profil: "",
+    pdl: "",
+    segment: selectedSegment,
+    puissance: "",
+    turpe: "",
     car: 0,
     carHp: 0,
     carHc: 0,
@@ -57,8 +58,6 @@ export default function Home() {
         hce: 0,
         moyem: 0,
         mois: 0,
-        cta: 0,
-        ticgn: 0,
         htva: 0,
         type: "fix",
         partnerName: "Alpiq",
@@ -102,7 +101,7 @@ export default function Home() {
   const addNosOffresAirtable = async (offGenId) => {
     await axios
       .post(
-        "https://api.airtable.com/v0/app9O3VyWFlvjeBfX/NosOffres",
+        "https://api.airtable.com/v0/app9O3VyWFlvjeBfX/NosOffresElectricite",
         {
           records: formData.offers.map((item) => {
             return {
@@ -115,11 +114,16 @@ export default function Home() {
                   .substring(0, 10),
                 FinDeFourniture: item.endDate.toISOString().substring(0, 10),
                 Type: item.type,
-                CAR: formData.car.toString(),
                 Molecule: item.molecule.toString(),
+                HP: item.hp.toString(),
+                HC: item.hc.toString(),
+                PTE: item.pte.toString(),
+                HPH: item.hph.toString(),
+                HCH: item.hch.toString(),
+                HPE: item.hpe.toString(),
+                HCE: item.hce.toString(),
+                Moyem: item.moyem.toString(),
                 Mois: item.mois.toString(),
-                CTA: item.cta.toString(),
-                TICGN: item.ticgn.toString(),
                 TotalHTVA: item.htva.toString(),
               },
             };
@@ -145,7 +149,7 @@ export default function Home() {
   const addOfferGenAirtable = async (pdfUrl) => {
     await axios
       .post(
-        "https://api.airtable.com/v0/app9O3VyWFlvjeBfX/OfferGen",
+        "https://api.airtable.com/v0/app9O3VyWFlvjeBfX/OfferGenElectricite",
         {
           fields: {
             ID: `TG${Date.now().toString().substring(4)}`,
@@ -154,12 +158,23 @@ export default function Home() {
             Interlocuteur: formData.contactPerson,
             Consultant: selectedConsultant.name,
             Site: formData.site,
-            PCE: formData.pce,
-            Tarif: formData.tarif,
-            Profil: formData.profil,
+            PDL: formData.pdl,
+            Segment: formData.segment,
+            Puissance: formData.puissance,
             CAR: formData.car.toString(),
-            PlacedDate: formData.placedDate.toISOString().substring(0, 10),
-            PDF: [{ url: pdfUrl }],
+            Turpe: formData.turpe.toString(),
+            CarHp: formData.carHp.toString(),
+            CarHc: formData.carHc.toString(),
+            CarPte: formData.carPte.toString(),
+            CarHph: formData.carHph.toString(),
+            CarHch: formData.carHch.toString(),
+            CarHpe: formData.carHpe.toString(),
+            CarHce: formData.carHce.toString(),
+            PlacedDate: formData.placedDate
+              .toISOString()
+              .substring(0, 16)
+              .replace("T", " "),
+            PDF: [{ url: "late" }],
           },
         },
         {
@@ -178,8 +193,9 @@ export default function Home() {
   };
 
   const handleSubmitButton = () => {
-    setIsLoading(true);
-    handleCreatePDF();
+    // setIsLoading(true);
+    // handleCreatePDF();
+    addOfferGenAirtable("djfhjs");
   };
 
   // Shortified version of calculateHTVA
@@ -348,7 +364,7 @@ export default function Home() {
           <Link href={`/`}>
             <img
               className="w-full px-4"
-              src="./img/electricite-banner.webp"
+              src="https://offergen.vercel.app/img/electricite-banner.webp"
               width={1300}
               height={200}
               alt="Banner"
