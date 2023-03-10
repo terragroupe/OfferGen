@@ -36,29 +36,29 @@ export default function Home() {
     segment: selectedSegment,
     puissance: "",
     turpe: "",
-    car: 0,
-    carHp: 0,
-    carHc: 0,
-    carPte: 0,
-    carHph: 0,
-    carHch: 0,
-    carHpe: 0,
-    carHce: 0,
+    car: "",
+    carHp: "",
+    carHc: "",
+    carPte: "",
+    carHph: "",
+    carHch: "",
+    carHpe: "",
+    carHce: "",
     startDate: new Date(),
     placedDate: new Date(),
     offers: [
       {
-        molecule: 0,
-        hp: 0,
-        hc: 0,
-        pte: 0,
-        hph: 0,
-        hch: 0,
-        hpe: 0,
-        hce: 0,
-        moyem: 0,
-        mois: 0,
-        htva: 0,
+        molecule: "",
+        hp: "",
+        hc: "",
+        pte: "",
+        hph: "",
+        hch: "",
+        hpe: "",
+        hce: "",
+        moyem: "",
+        mois: "",
+        htva: "",
         type: "fix",
         partnerName: "Alpiq",
         endDate: new Date(),
@@ -476,7 +476,7 @@ export default function Home() {
               <input
                 className="w-full py-3 text-center border-r border-tgbrown-400"
                 type="text"
-                maxLength={8}
+                maxLength={20}
                 name="pdl"
                 id="pdl"
                 value={formData.pdl}
@@ -515,6 +515,7 @@ export default function Home() {
                 min={1}
                 name="car"
                 id="car"
+                placeholder="0"
                 value={formData.car}
                 onChange={handleInputChange}
               />
@@ -596,6 +597,7 @@ export default function Home() {
                           min={1}
                           name="carPte"
                           id="carPte"
+                          placeholder="0"
                           value={formData.carPte}
                           onChange={handleInputChange}
                         />
@@ -606,6 +608,7 @@ export default function Home() {
                         min={1}
                         name="carHph"
                         id="carHph"
+                        placeholder="0"
                         value={formData.carHph}
                         onChange={handleInputChange}
                       />
@@ -615,6 +618,7 @@ export default function Home() {
                         min={1}
                         name="carHch"
                         id="carHch"
+                        placeholder="0"
                         value={formData.carHch}
                         onChange={handleInputChange}
                       />
@@ -624,6 +628,7 @@ export default function Home() {
                         min={1}
                         name="carHpe"
                         id="carHpe"
+                        placeholder="0"
                         value={formData.carHpe}
                         onChange={handleInputChange}
                       />
@@ -633,6 +638,7 @@ export default function Home() {
                         min={1}
                         name="carHce"
                         id="carHce"
+                        placeholder="0"
                         value={formData.carHce}
                         onChange={handleInputChange}
                       />
@@ -695,6 +701,7 @@ export default function Home() {
                         min={1}
                         name="carHp"
                         id="carHp"
+                        placeholder="0"
                         value={formData.carHp}
                         onChange={handleInputChange}
                       />
@@ -704,6 +711,7 @@ export default function Home() {
                         min={1}
                         name="carHc"
                         id="carHc"
+                        placeholder="0"
                         value={formData.carHc}
                         onChange={handleInputChange}
                       />
@@ -744,12 +752,16 @@ export default function Home() {
                   type="date"
                   className="ml-1"
                   value={formData.startDate.toISOString().substring(0, 10)}
-                  onChange={(e) =>
-                    setFormData((old) => ({
-                      ...old,
-                      startDate: new Date(e.target.value),
-                    }))
-                  }
+                  onChange={(e) => {
+                    try {
+                      setFormData((old) => ({
+                        ...old,
+                        startDate: new Date(e.target.value),
+                      }));
+                    } catch (error) {
+                      console.error(error);
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -936,6 +948,7 @@ export default function Home() {
                             min={1}
                             name="hp"
                             id="hp"
+                            placeholder="0"
                             value={item.hp}
                             onChange={(e) => handleOfferInput(e, index)}
                           />
@@ -945,6 +958,7 @@ export default function Home() {
                             min={1}
                             name="hc"
                             id="hc"
+                            placeholder="0"
                             value={item.hc}
                             onChange={(e) => handleOfferInput(e, index)}
                           />
@@ -959,6 +973,7 @@ export default function Home() {
                               min={1}
                               name="pte"
                               id="pte"
+                              placeholder="0"
                               value={item.pte}
                               onChange={(e) => handleOfferInput(e, index)}
                             />
@@ -969,6 +984,7 @@ export default function Home() {
                             min={1}
                             name="hph"
                             id="hph"
+                            placeholder="0"
                             value={item.hph}
                             onChange={(e) => handleOfferInput(e, index)}
                           />
@@ -978,6 +994,7 @@ export default function Home() {
                             min={1}
                             name="hch"
                             id="hch"
+                            placeholder="0"
                             value={item.hch}
                             onChange={(e) => handleOfferInput(e, index)}
                           />
@@ -987,6 +1004,7 @@ export default function Home() {
                             min={1}
                             name="hpe"
                             id="hpe"
+                            placeholder="0"
                             value={item.hpe}
                             onChange={(e) => handleOfferInput(e, index)}
                           />
@@ -996,6 +1014,7 @@ export default function Home() {
                             min={1}
                             name="hce"
                             id="hce"
+                            placeholder="0"
                             value={item.hce}
                             onChange={(e) => handleOfferInput(e, index)}
                           />
@@ -1017,6 +1036,7 @@ export default function Home() {
                     min={1}
                     name="mois"
                     id="mois"
+                    placeholder="0"
                     value={item.mois}
                     onChange={(e) => handleOfferInput(e, index)}
                   />
