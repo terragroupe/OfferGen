@@ -198,48 +198,66 @@ export default function Home() {
     addOfferGenAirtable("djfhjs");
   };
 
-  // Shortified version of calculateHTVA
+  // Function For Calculating HTVA
   const calculateHTVA = (upData) => {
-    const {
-      offers,
-      car,
-      carHp,
-      carHc,
-      carPte,
-      carHph,
-      segmentDecision,
-      pteDecision,
-      showPTE,
-    } = upData;
-    const updatedOffers = offers.map((offer) => {
-      let htva, moyem;
-      if (segmentDecision === 2) {
-        htva =
-          parseFloat(offer.molecule) * parseFloat(car) +
-          parseFloat(offer.mois) * 12;
-        moyem = 0;
-      } else if (pteDecision) {
-        const baseHTVA =
-          parseFloat(offer.hph) * parseFloat(carHph) +
-          parseFloat(offer.hch) * parseFloat(carHch) +
-          parseFloat(offer.hpe) * parseFloat(carHpe) +
-          parseFloat(offer.hce) * parseFloat(carHce) +
-          parseFloat(offer.mois) * 12;
-        htva = showPTE
-          ? parseFloat(offer.pte) * parseFloat(carPte) + baseHTVA
-          : baseHTVA;
-        moyem = parseFloat(htva / parseFloat(car)).toFixed(2);
-      } else {
-        htva =
-          parseFloat(offer.hp) * parseFloat(carHp) +
-          parseFloat(offer.hc) * parseFloat(carHc) +
-          parseFloat(offer.mois) * 12;
-        moyem = parseFloat(htva / parseFloat(car)).toFixed(2);
+    console.log("Calculating...");
+    const updatedOffers = upData.offers.map((offer) => {
+      if(segmentDecision === 2){
+        const offerHTVA =
+        parseFloat(offer.molecule) * parseFloat(upData.car) +
+        parseFloat(offer.mois) * 12;
+        return {
+          ...offer,
+          htva: parseFloat(offerHTVA).toFixed(2),
+          moyem: 0,
+        };
       }
-      return { ...offer, htva: htva.toFixed(2), moyem };
+      if (pteDecision) {
+        if (showPTE) {
+          const offerPteHTVA =
+            parseFloat(offer.pte) * parseFloat(upData.carPte) +
+            parseFloat(offer.hph) * parseFloat(upData.carHph) +
+            parseFloat(offer.hch) * parseFloat(upData.carHch) +
+            parseFloat(offer.hpe) * parseFloat(upData.carHpe) +
+            parseFloat(offer.hce) * parseFloat(upData.carHce) +
+            parseFloat(offer.mois) * 12;
+          return {
+            ...offer,
+            htva: parseFloat(offerPteHTVA).toFixed(2),
+            moyem: parseFloat(offerPteHTVA / parseFloat(upData.car)).toFixed(2),
+          };
+        } else {
+          const offerWithoutPteHTVA =
+            parseFloat(offer.hph) * parseFloat(upData.carHph) +
+            parseFloat(offer.hch) * parseFloat(upData.carHch) +
+            parseFloat(offer.hpe) * parseFloat(upData.carHpe) +
+            parseFloat(offer.hce) * parseFloat(upData.carHce) +
+            parseFloat(offer.mois) * 12;
+          return {
+            ...offer,
+            htva: parseFloat(offerWithoutPteHTVA).toFixed(2),
+            moyem: parseFloat(
+              offerWithoutPteHTVA / parseFloat(upData.car)
+            ).toFixed(2),
+          };
+        }
+      } else {
+        const offerHpHcHTVA =
+          parseFloat(offer.hp) * parseFloat(upData.carHp) +
+          parseFloat(offer.hc) * parseFloat(upData.carHc) +
+          parseFloat(offer.mois) * 12;
+        return {
+          ...offer,
+          htva: parseFloat(offerHpHcHTVA).toFixed(2),
+          moyem: parseFloat(offerHpHcHTVA / parseFloat(upData.car)).toFixed(2),
+        };
+      }
     });
 
-    setFormData((old) => ({ ...old, offers: updatedOffers }));
+    setFormData((old) => ({
+      ...old,
+      offers: updatedOffers,
+    }));
   };
 
   // Check The Segment Value and Return number to indicate conditional render
