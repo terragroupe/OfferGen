@@ -12,7 +12,7 @@ import Partner from "../data/partner.json";
 import SegmentList from "../data/segmentList.json";
 import { CreateHtmltoPDF, MakeDownloadFromURL } from "../utils/helper";
 
-import DateTimePicker from "../components/DateTimePicker";
+import DateTimePicker from "../components/dateTimePicker";
 import ConsultantDropdown from "../components/consultantDropdown";
 import PartnerDropdown from "../components/partnerDropdown";
 
