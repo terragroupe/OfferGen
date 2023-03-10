@@ -12,6 +12,7 @@ import Partner from "../data/partner.json";
 import SegmentList from "../data/segmentList.json";
 import { CreateHtmltoPDF, MakeDownloadFromURL } from "../utils/helper";
 
+import DateTimePicker from "../components/DateTimePicker";
 import ConsultantDropdown from "../components/consultantDropdown";
 import PartnerDropdown from "../components/partnerDropdown";
 
@@ -182,24 +183,108 @@ export default function Home() {
   };
 
   // Function For Calculating HTVA
+  // Descriptive Code
+  // const calculateHTVA = (upData) => {
+  //   const updatedOffers = upData.offers.map((offer) => {
+  //     if(segmentDecision === 2){
+  //       const offerHTVA =
+  //       parseFloat(offer.molecule) * parseFloat(upData.car) +
+  //       parseFloat(offer.mois) * 12;
+  //       return {
+  //         ...offer,
+  //         htva: parseFloat(offerHTVA).toFixed(2),
+  //         moyem: 0,
+  //       };
+  //     }
+  //     if (pteDecision) {
+  //       if (showPTE) {
+  //         const offerPteHTVA =
+  //           parseFloat(offer.pte) * parseFloat(upData.carPte) +
+  //           parseFloat(offer.hph) * parseFloat(upData.carHph) +
+  //           parseFloat(offer.hch) * parseFloat(upData.carHch) +
+  //           parseFloat(offer.hpe) * parseFloat(upData.carHpe) +
+  //           parseFloat(offer.hce) * parseFloat(upData.carHce) +
+  //           parseFloat(offer.mois) * 12;
+  //         return {
+  //           ...offer,
+  //           htva: parseFloat(offerPteHTVA).toFixed(2),
+  //           moyem: parseFloat(offerPteHTVA / parseFloat(upData.car)).toFixed(2),
+  //         };
+  //       } else {
+  //         const offerWithoutPteHTVA =
+  //           parseFloat(offer.hph) * parseFloat(upData.carHph) +
+  //           parseFloat(offer.hch) * parseFloat(upData.carHch) +
+  //           parseFloat(offer.hpe) * parseFloat(upData.carHpe) +
+  //           parseFloat(offer.hce) * parseFloat(upData.carHce) +
+  //           parseFloat(offer.mois) * 12;
+  //         return {
+  //           ...offer,
+  //           htva: parseFloat(offerWithoutPteHTVA).toFixed(2),
+  //           moyem: parseFloat(
+  //             offerWithoutPteHTVA / parseFloat(upData.car)
+  //           ).toFixed(2),
+  //         };
+  //       }
+  //     } else {
+  //       const offerHpHcHTVA =
+  //         parseFloat(offer.hp) * parseFloat(upData.carHp) +
+  //         parseFloat(offer.hc) * parseFloat(upData.carHc) +
+  //         parseFloat(offer.mois) * 12;
+  //       return {
+  //         ...offer,
+  //         htva: parseFloat(offerHpHcHTVA).toFixed(2),
+  //         moyem: parseFloat(offerHpHcHTVA / parseFloat(upData.car)).toFixed(2),
+  //       };
+  //     }
+  //   });
+
+  //   setFormData((old) => ({
+  //     ...old,
+  //     offers: updatedOffers,
+  //   }));
+  // };
+  // Shortified version of calculateHTVA
   const calculateHTVA = (upData) => {
-    const updatedOffers = upData.offers.map((offer) => {
-      const offerHTVA =
-        parseFloat(offer.molecule) * parseFloat(upData.car) +
-        parseFloat(offer.mois) * 12 +
-        parseFloat(offer.cta) +
-        parseFloat(offer.ticgn) * parseFloat(upData.car);
-      return {
-        ...offer,
-        htva: parseFloat(offerHTVA).toFixed(2),
-        moyem: parseFloat(offerHTVA / upData.car).toFixed(2),
-      };
+    const {
+      offers,
+      car,
+      carHp,
+      carHc,
+      carPte,
+      carHph,
+      segmentDecision,
+      pteDecision,
+      showPTE,
+    } = upData;
+    const updatedOffers = offers.map((offer) => {
+      let htva, moyem;
+      if (segmentDecision === 2) {
+        htva =
+          parseFloat(offer.molecule) * parseFloat(car) +
+          parseFloat(offer.mois) * 12;
+        moyem = 0;
+      } else if (pteDecision) {
+        const baseHTVA =
+          parseFloat(offer.hph) * parseFloat(carHph) +
+          parseFloat(offer.hch) * parseFloat(carHch) +
+          parseFloat(offer.hpe) * parseFloat(carHpe) +
+          parseFloat(offer.hce) * parseFloat(carHce) +
+          parseFloat(offer.mois) * 12;
+        htva = showPTE
+          ? parseFloat(offer.pte) * parseFloat(carPte) + baseHTVA
+          : baseHTVA;
+        moyem = parseFloat(htva / parseFloat(car)).toFixed(2);
+      } else {
+        htva =
+          parseFloat(offer.hp) * parseFloat(carHp) +
+          parseFloat(offer.hc) * parseFloat(carHc) +
+          parseFloat(offer.mois) * 12;
+        moyem = parseFloat(htva / parseFloat(car)).toFixed(2);
+      }
+      return { ...offer, htva: htva.toFixed(2), moyem };
     });
 
-    setFormData((old) => ({
-      ...old,
-      offers: updatedOffers,
-    }));
+    setFormData((old) => ({ ...old, offers: updatedOffers }));
   };
 
   // Check The Segment Value and Return number to indicate conditional render
@@ -224,6 +309,52 @@ export default function Home() {
     )
       return true;
     return false;
+  })();
+
+  // Check if CAR value == All portions of CAR
+  // const carSumDecision = (() => {
+  //   if (pteDecision) {
+  //     if (showPTE) {
+  //       const carPteTotal =
+  //         parseFloat(formData.carPte || 0) +
+  //         parseFloat(formData.carHph) +
+  //         parseFloat(formData.carHch) +
+  //         parseFloat(formData.carHpe) +
+  //         parseFloat(formData.carHce);
+  //       return carPteTotal === parseFloat(formData.car);
+  //     } else {
+  //       const carTotalWithoutPte =
+  //         parseFloat(formData.carHph) +
+  //         parseFloat(formData.carHch) +
+  //         parseFloat(formData.carHpe) +
+  //         parseFloat(formData.carHce);
+  //       return carTotalWithoutPte === parseFloat(formData.car);
+  //     }
+  //   } else {
+  //     const carHpHcTotal =
+  //       parseFloat(formData.carHp) + parseFloat(formData.carHc);
+  //     return carHpHcTotal === parseFloat(formData.car);
+  //   }
+  // })();
+  // Short version of carSumDecision
+
+  const carSumDecision = (() => {
+    const { car, carPte, carHph, carHch, carHpe, carHce, carHp, carHc } =
+      formData;
+    if (pteDecision) {
+      const carTotal =
+        parseFloat(carPte || 0) +
+        parseFloat(carHph) +
+        parseFloat(carHch) +
+        parseFloat(carHpe) +
+        parseFloat(carHce);
+      return showPTE
+        ? carTotal === parseFloat(car)
+        : carTotalWithoutPte === parseFloat(car);
+    } else {
+      const carTotal = parseFloat(carHp) + parseFloat(carHc);
+      return carTotal === parseFloat(car);
+    }
   })();
 
   // Handle Date Input
@@ -593,6 +724,7 @@ export default function Home() {
                     </div>
                   </div>
                 )}
+
                 {segmentDecision === 3 && (
                   <div className="max-w-md mx-auto rounded-md border border-tgbrown-400">
                     <div className="grid grid-cols-2">
@@ -639,6 +771,11 @@ export default function Home() {
                     </div>
                   </div>
                 )}
+                {!carSumDecision && (
+                  <h6 className="text-center text-xs text-red-600">
+                    ** Veuillez vérifier la valeur de la voiture
+                  </h6>
+                )}
               </div>
             )}
             {/* Consoitration Section - END */}
@@ -647,10 +784,17 @@ export default function Home() {
               <h1 className="text-tgbrown-400 font-extrabold text-base">
                 LES OFFRES RETENUES
               </h1>
-              <div className="text-tgbrown-400 font-semibold text-xs">
+              <div className="text-tgbrown-400 font-semibold text-xs flex items-center">
                 {/* {debutDate.toLocaleDateString('en-UK',{ day: '2-digit', month: '2-digit', year: 'numeric' })} */}
-                Début de fourniture au
-                <input
+                <span className="mr-1">Début de fourniture au</span>
+                <DateTimePicker
+                  value={formData.startDate}
+                  needTime={false}
+                  onChange={(newDate) =>
+                    setFormData((old) => ({ ...old, startDate: newDate }))
+                  }
+                />
+                {/* <input
                   type="date"
                   className="ml-1"
                   value={formData.startDate.toISOString().substring(0, 10)}
@@ -660,7 +804,7 @@ export default function Home() {
                       startDate: new Date(e.target.value),
                     }))
                   }
-                />
+                /> */}
               </div>
             </div>
 
@@ -788,12 +932,12 @@ export default function Home() {
                         onChange={(e) => handleDateInput(e, index)}
                       />
                       <br />
-                      {(item.endDate.getFullYear() -
+                      {/* {(item.endDate.getFullYear() -
                         formData.startDate.getFullYear()) *
                         12 +
                         (item.endDate.getMonth() -
                           formData.startDate.getMonth()) +
-                        1}{" "}
+                        1}{" "} */}
                       mois
                     </div>
                   </div>
@@ -998,42 +1142,14 @@ export default function Home() {
 
             {/* Footer Portion */}
             <div className="flex justify-between mt-8">
-              <div className="text-xs font-bold">
-                Date de validité:{" "}
-                <input
-                  type="datetime-local"
-                  className="ml-1"
-                  value={
-                    formData.placedDate
-                      ? `${formData.placedDate
-                          .getFullYear()
-                          .toString()
-                          .padStart(4, "0")}-${(
-                          formData.placedDate.getMonth() + 1
-                        )
-                          .toString()
-                          .padStart(2, "0")}-${formData.placedDate
-                          .getDate()
-                          .toString()
-                          .padStart(2, "0")}T${formData.placedDate
-                          .getHours()
-                          .toString()
-                          .padStart(2, "0")}:${formData.placedDate
-                          .getMinutes()
-                          .toString()
-                          .padStart(2, "0")}`
-                      : ""
+              <div className="text-xs font-bold flex items-center">
+                <span className="mr-1">Date de validité:</span>
+                <DateTimePicker className="font-normal"
+                  value={formData.placedDate}
+                  needTime={true}
+                  onChange={(newDate) =>
+                    setFormData((old) => ({ ...old, placedDate: newDate }))
                   }
-                  onChange={(e) =>
-                    setFormData((old) => ({
-                      ...old,
-                      placedDate: e.target.value
-                        ? new Date(e.target.value)
-                        : null,
-                    }))
-                  }
-                  name=""
-                  id=""
                 />
               </div>
               <div className="text-xs font-bold">CONFIDENTIEL</div>

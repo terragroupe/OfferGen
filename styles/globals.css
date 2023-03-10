@@ -1,6 +1,5 @@
 /* Import Fonts -> START */
 
-
 /* Always Keep Font Avobe Tailwind Import */
 
 @import url("https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
@@ -12,38 +11,43 @@
 @tailwind utilities;
 html,
 body {
-    padding: 0;
-    margin: 0;
-    font-family: Barlow, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  padding: 0;
+  margin: 0;
+  font-family: Barlow, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
+    Helvetica Neue, sans-serif;
 }
 
 a {
-    color: inherit;
-    text-decoration: none;
+  color: inherit;
+  text-decoration: none;
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 /* Hide default calender icon */
 input[type="date"]::-webkit-calendar-picker-indicator {
-    display: none;
+  display: none;
 }
 input[type="date"]:hover::-webkit-calendar-picker-indicator,
 input[type="date"]:focus-within::-webkit-calendar-picker-indicator {
-    display: block;
-    margin: 0;
-    padding: 0;
+  display: block;
+  margin: 0;
+  padding: 0;
 }
 
 /* Hide default Number Increment/Decrement */
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
-input[type=number] { 
+input[type="number"] {
   -moz-appearance: textfield; /* Firefox */
+}
+
+.rdtPicker {
+  top: -270px;
 }
