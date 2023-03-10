@@ -94,7 +94,7 @@ export default function Home() {
     // OPEN theGenerated PDF in new TAB
     window.open(pdfUrl, "_blank");
     MakeDownloadFromURL(pdfUrl);
-    // addOfferGenAirtable(pdfUrl);
+    addOfferGenAirtable(pdfUrl);
   };
 
   // Add Data to OfferGen Table - AIRTABLE
@@ -174,7 +174,7 @@ export default function Home() {
               .toISOString()
               .substring(0, 16)
               .replace("T", " "),
-            PDF: [{ url: "late" }],
+            PDF: [{ url: pdfUrl }],
           },
         },
         {
@@ -193,19 +193,19 @@ export default function Home() {
   };
 
   const handleSubmitButton = () => {
-    // setIsLoading(true);
-    // handleCreatePDF();
-    addOfferGenAirtable("djfhjs");
+    setIsLoading(true);
+    handleCreatePDF();
+    // addOfferGenAirtable("djfhjs");
   };
 
   // Function For Calculating HTVA
   const calculateHTVA = (upData) => {
     console.log("Calculating...");
     const updatedOffers = upData.offers.map((offer) => {
-      if(segmentDecision === 2){
+      if (segmentDecision === 2) {
         const offerHTVA =
-        parseFloat(offer.molecule) * parseFloat(upData.car) +
-        parseFloat(offer.mois) * 12;
+          parseFloat(offer.molecule) * parseFloat(upData.car) +
+          parseFloat(offer.mois) * 12;
         return {
           ...offer,
           htva: parseFloat(offerHTVA).toFixed(2),

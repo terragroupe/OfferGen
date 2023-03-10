@@ -12,6 +12,9 @@ export const CreateHtmltoPDF = async (printContent) => {
           input[type="date"]::-webkit-calendar-picker-indicator {
             display: none;
           }
+          .rdtPicker {
+            display: none;
+          }          
         </style>
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
@@ -33,7 +36,7 @@ export const CreateHtmltoPDF = async (printContent) => {
       `;
 
   const apiKey =
-    "whrismyphn@gmail.com_adb9df41092f46dc6fe2ce3f130e7ae32a5eaf17d0ef805fbd024486bd6514ad3f0280de";
+    "wael.bouabda@terra-groupe.fr_d05cc87580ad746ef3713c247bd1434aab733a611508e2a96ca230770302b99ea2d38a79";
   const endpoint = "https://api.pdf.co/v1/pdf/convert/from/html";
 
   const response = await axios.post(
