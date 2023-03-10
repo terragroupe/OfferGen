@@ -182,67 +182,6 @@ export default function Home() {
     handleCreatePDF();
   };
 
-  // Function For Calculating HTVA
-  // Descriptive Code
-  // const calculateHTVA = (upData) => {
-  //   const updatedOffers = upData.offers.map((offer) => {
-  //     if(segmentDecision === 2){
-  //       const offerHTVA =
-  //       parseFloat(offer.molecule) * parseFloat(upData.car) +
-  //       parseFloat(offer.mois) * 12;
-  //       return {
-  //         ...offer,
-  //         htva: parseFloat(offerHTVA).toFixed(2),
-  //         moyem: 0,
-  //       };
-  //     }
-  //     if (pteDecision) {
-  //       if (showPTE) {
-  //         const offerPteHTVA =
-  //           parseFloat(offer.pte) * parseFloat(upData.carPte) +
-  //           parseFloat(offer.hph) * parseFloat(upData.carHph) +
-  //           parseFloat(offer.hch) * parseFloat(upData.carHch) +
-  //           parseFloat(offer.hpe) * parseFloat(upData.carHpe) +
-  //           parseFloat(offer.hce) * parseFloat(upData.carHce) +
-  //           parseFloat(offer.mois) * 12;
-  //         return {
-  //           ...offer,
-  //           htva: parseFloat(offerPteHTVA).toFixed(2),
-  //           moyem: parseFloat(offerPteHTVA / parseFloat(upData.car)).toFixed(2),
-  //         };
-  //       } else {
-  //         const offerWithoutPteHTVA =
-  //           parseFloat(offer.hph) * parseFloat(upData.carHph) +
-  //           parseFloat(offer.hch) * parseFloat(upData.carHch) +
-  //           parseFloat(offer.hpe) * parseFloat(upData.carHpe) +
-  //           parseFloat(offer.hce) * parseFloat(upData.carHce) +
-  //           parseFloat(offer.mois) * 12;
-  //         return {
-  //           ...offer,
-  //           htva: parseFloat(offerWithoutPteHTVA).toFixed(2),
-  //           moyem: parseFloat(
-  //             offerWithoutPteHTVA / parseFloat(upData.car)
-  //           ).toFixed(2),
-  //         };
-  //       }
-  //     } else {
-  //       const offerHpHcHTVA =
-  //         parseFloat(offer.hp) * parseFloat(upData.carHp) +
-  //         parseFloat(offer.hc) * parseFloat(upData.carHc) +
-  //         parseFloat(offer.mois) * 12;
-  //       return {
-  //         ...offer,
-  //         htva: parseFloat(offerHpHcHTVA).toFixed(2),
-  //         moyem: parseFloat(offerHpHcHTVA / parseFloat(upData.car)).toFixed(2),
-  //       };
-  //     }
-  //   });
-
-  //   setFormData((old) => ({
-  //     ...old,
-  //     offers: updatedOffers,
-  //   }));
-  // };
   // Shortified version of calculateHTVA
   const calculateHTVA = (upData) => {
     const {
@@ -312,32 +251,6 @@ export default function Home() {
   })();
 
   // Check if CAR value == All portions of CAR
-  // const carSumDecision = (() => {
-  //   if (pteDecision) {
-  //     if (showPTE) {
-  //       const carPteTotal =
-  //         parseFloat(formData.carPte || 0) +
-  //         parseFloat(formData.carHph) +
-  //         parseFloat(formData.carHch) +
-  //         parseFloat(formData.carHpe) +
-  //         parseFloat(formData.carHce);
-  //       return carPteTotal === parseFloat(formData.car);
-  //     } else {
-  //       const carTotalWithoutPte =
-  //         parseFloat(formData.carHph) +
-  //         parseFloat(formData.carHch) +
-  //         parseFloat(formData.carHpe) +
-  //         parseFloat(formData.carHce);
-  //       return carTotalWithoutPte === parseFloat(formData.car);
-  //     }
-  //   } else {
-  //     const carHpHcTotal =
-  //       parseFloat(formData.carHp) + parseFloat(formData.carHc);
-  //     return carHpHcTotal === parseFloat(formData.car);
-  //   }
-  // })();
-  // Short version of carSumDecision
-
   const carSumDecision = (() => {
     const { car, carPte, carHph, carHch, carHpe, carHce, carHp, carHc } =
       formData;
@@ -348,6 +261,12 @@ export default function Home() {
         parseFloat(carHch) +
         parseFloat(carHpe) +
         parseFloat(carHce);
+      const carTotalWithoutPte =
+        parseFloat(carHph) +
+        parseFloat(carHch) +
+        parseFloat(carHpe) +
+        parseFloat(carHce);
+
       return showPTE
         ? carTotal === parseFloat(car)
         : carTotalWithoutPte === parseFloat(car);
@@ -773,7 +692,7 @@ export default function Home() {
                 )}
                 {!carSumDecision && (
                   <h6 className="text-center text-xs text-red-600">
-                    ** Veuillez vérifier la valeur de la voiture
+                    ** Veuillez vérifier la valeur CAR
                   </h6>
                 )}
               </div>
@@ -787,14 +706,7 @@ export default function Home() {
               <div className="text-tgbrown-400 font-semibold text-xs flex items-center">
                 {/* {debutDate.toLocaleDateString('en-UK',{ day: '2-digit', month: '2-digit', year: 'numeric' })} */}
                 <span className="mr-1">Début de fourniture au</span>
-                <DateTimePicker
-                  value={formData.startDate}
-                  needTime={false}
-                  onChange={(newDate) =>
-                    setFormData((old) => ({ ...old, startDate: newDate }))
-                  }
-                />
-                {/* <input
+                <input
                   type="date"
                   className="ml-1"
                   value={formData.startDate.toISOString().substring(0, 10)}
@@ -804,7 +716,7 @@ export default function Home() {
                       startDate: new Date(e.target.value),
                     }))
                   }
-                /> */}
+                />
               </div>
             </div>
 
@@ -932,12 +844,12 @@ export default function Home() {
                         onChange={(e) => handleDateInput(e, index)}
                       />
                       <br />
-                      {/* {(item.endDate.getFullYear() -
+                      {(item.endDate.getFullYear() -
                         formData.startDate.getFullYear()) *
                         12 +
                         (item.endDate.getMonth() -
                           formData.startDate.getMonth()) +
-                        1}{" "} */}
+                        1}{" "}
                       mois
                     </div>
                   </div>
@@ -1144,7 +1056,8 @@ export default function Home() {
             <div className="flex justify-between mt-8">
               <div className="text-xs font-bold flex items-center">
                 <span className="mr-1">Date de validité:</span>
-                <DateTimePicker className="font-normal"
+                <DateTimePicker
+                  className="font-normal"
                   value={formData.placedDate}
                   needTime={true}
                   onChange={(newDate) =>
